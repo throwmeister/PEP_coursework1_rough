@@ -1,0 +1,24 @@
+target string
+start empty string
+add characters until new string = target
+append arbitrary character to new string (cost of X)
+clone aby substring of new string and append it to the end of the new string (cost of Y)
+
+understood
+
+vars:
+clone_cost, append_cost, targetStr, endStr, endStr_substring
+
+clone/append math
+
+clone is more effective if:
+	clone_cost/len(clone_string) < append_cost
+append is more effective if:
+	append_cost < clone_cost/len(clone_string)
+can use both if:
+	append_cost=clone_cost/len(clone_string)
+	but use clone since it takes less time
+	
+
+problem: find if there is a substring present in endStr
+

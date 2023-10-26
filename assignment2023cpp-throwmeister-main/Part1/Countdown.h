@@ -43,71 +43,57 @@ public:
 
 // TODO: write code here:
 
-// brute force
-std::string RPNBuilder(std::vector<std::string> &numbers,
-    std::vector<std::string> &ops){
-    
-    std::vector<std::string> expressions;
-    // {'+', '*', '/', '-'}
-    // {'1', '2', '3', '4', '5', '6'}
+void createPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, std::vector<std::string> &vals,
+ std::vector<std::string> &permutation, std::vector<bool> &distinctVal){
 
-    // Num of num combos = 720
-    // Num of operator combos = 120
-    // always need 5 operators, 4 choices = 1024
-    
-
-
-
-
-}
-
-void RPNExpressionRecusionCalc(std::vector<std::string> &numbers,
-    std::vector<std::string> &ops,
-    std::vector<std::string> &curExpression,
-    std::vector<std::string> &finalSolution){
-    if (numbers.empty() && ops.empty()){
-        finalSolution.push_back(curExpression[0]);
+    if (permutation.size() == vals.size()){
+        // Push finished permutation onto vector
+        finalPermutations.push_back(permutation);
         return;
     }
 
-    if (!numbers.empty()){
-        curExpression.push_back(numbers.back());
-        numbers.pop_back();
-        RPNExpressionRecusionCalc(numbers, ops, curExpression, finalSolution);
-        numbers.push_back(curExpression.back());
-        curExpression.pop_back();
-    }
+    for (int i = 0; i < vals.size(); i++){
 
-    if (!ops.empty()){
-        curExpression.push_back(ops.back());
-        ops.pop_back();
-        RPNExpressionRecusionCalc(numbers, ops, curExpression, finalSolution);
-        ops.push_back(curExpression.back());
-        curExpression.pop_back();
+        // Checker for distinct value
+        if (!distinctVal[i]){
+            // recursion loop
+            distinctVal[i] = true;
+            permutation.push_back(vals[i]);
+            createPermutationsRecursion(finalPermutations, vals, permutation, distinctVal);
+            distinctVal[i] = false;
+            permutation.pop_back();
+        }
+        
     }
-
 }
 
-CountdownSolution solveCountdownProblem(const std::vector<int> numbers, const int targetNum){
+std::vector<std::vector<std::string>> permuteString(std::vector<std::string> &vals){
+    std::vector<std::vector<std::string>> permutations;
+    std::vector<bool> distinctVals(vals.size(), false);
+    std::vector<std::string> _p;
+    createPermutationsRecursion(permutations, vals, _p, distinctVals);
+    return permutations;
+}
+
+
+CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targetNum){
     // bruteforce: build every possible rpn expression until the target number is reached or the closest#
     // Idea: when bulding the rpn string, check if + and * expressions do the same thing: prevent repeat evalutations
 
     
     double closestTarget = 0;
     std::vector<std::string> operators = { "+", "-", "*", "/" };
-    std::vector<std::string> curExpression;
-    std::vector<std::string> finalSolution;
-
+    
     std::vector<std::string> strNums;
 
     for (int num: numbers){
         strNums.push_back(intToString(num));
     }
 
-    RPNExpressionRecusionCalc(strNums, operators, curExpression, finalSolution);
-
-    for (const std::string& expression : finalSolution) {
-        std::cout << expression << std::endl;
+    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums);
+    
+    for (const std::vector<std::string>& expression : finalSolution) {
+        // std::cout << expression << std::endl;
     }
 
     CountdownSolution c;

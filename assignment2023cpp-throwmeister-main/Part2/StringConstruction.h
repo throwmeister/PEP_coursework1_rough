@@ -28,7 +28,10 @@ int stringConstruction(string &targetStr, int cloneCost, int appendCost){
     // Then compare that clone cost vs the append cost of it
 
     while (endStr != targetStr){
-        int endIndex = endStr.size();
+        // Idea: wrap whole thing in a for loop iterating over scores in a vector
+        // Then, check every score in the vector to solve the score problem
+        
+        int const endIndex = endStr.size();
         int const targetSizeLeft = targetStr.size() - endIndex;
 
         cout << "current string: " << endStr << "\n";
@@ -37,7 +40,6 @@ int stringConstruction(string &targetStr, int cloneCost, int appendCost){
 
         string foundSubstring = "";
         // Find if there is a substring in endStr which can be cloned
-        // more efficient version
         for(int n = endIndex; (n>0) || (targetSizeLeft>(endIndex-n)); n--){
             string substring = targetStr.substr(endIndex, n);
             int substringPos = endStr.find(substring);

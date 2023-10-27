@@ -43,23 +43,21 @@ public:
 
 // TODO: write code here:
 
-void createPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
- std::vector<std::string> &permutation, std::vector<bool> &distinctVal){
+void createNumPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
+ std::vector<std::string> &permutation, std::vector<bool> &distinctVal, const int targetSize){
 
-    if (permutation.size() == vals.size()){
+    if (permutation.size() == targetSize){
         // Push finished permutation onto vector
         finalPermutations.push_back(permutation);
         return;
     }
-
     for (int i = 0; i < vals.size(); i++){
-
         // Checker for distinct value
         if (!distinctVal[i]){
             // recursion loop
             distinctVal[i] = true;
             permutation.push_back(vals[i]);
-            createPermutationsRecursion(finalPermutations, vals, permutation, distinctVal);
+            createNumPermutationsRecursion(finalPermutations, vals, permutation, distinctVal, targetSize);
             distinctVal[i] = false;
             permutation.pop_back();
         }
@@ -67,11 +65,46 @@ void createPermutationsRecursion(std::vector<std::vector<std::string>> &finalPer
     }
 }
 
-std::vector<std::vector<std::string>> permuteString(std::vector<std::string> &vals){
+void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
+ std::vector<std::string> &permutation, const int targetSize){
+    
+    if (permutation.size() == targetSize){
+        // Push finished permutation onto vector
+        finalPermutations.push_back(permutation);
+        return;
+    }
+
+    if (permutation.size() == 4){
+        for (int i = 0; i < vals.size(); i++){
+            permutation.push_back(vals[i]);
+            createOperatorPermutationsRecursion(finalPermutations, vals, permutation, targetSize);
+            permutation.pop_back();
+        }
+    }
+    for (int i = 0; i < vals.size(); i++){
+        // Checker for distinct value
+        // recursion loop
+        // {x - / *}
+        permutation.push_back(vals[i]);
+        createOperatorPermutationsRecursion(finalPermutations, vals, permutation, targetSize);
+        permutation.pop_back();
+    }
+
+}
+ 
+
+std::vector<std::vector<std::string>> permuteString(const std::vector<std::string> &vals, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
     std::vector<std::string> _p;
-    createPermutationsRecursion(permutations, vals, _p, distinctVals);
+    createNumPermutationsRecursion(permutations, vals, _p, distinctVals, targetSize);
+    return permutations;
+}
+
+std::vector<std::vector<std::string>> permuteOperators(const std::vector<std::string> &ops, const int targetSize){
+    std::vector<std::vector<std::string>> permutations;
+    std::vector<std::string> _p;
+    createOperatorPermutationsRecursion(permutations, ops, _p, targetSize);
     return permutations;
 }
 
@@ -90,7 +123,10 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
         strNums.push_back(intToString(num));
     }
 
-    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums);
+    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums, 3);
+
+    std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, 3);
+
     
     for (const std::vector<std::string>& expression : finalSolution) {
         // std::cout << expression << std::endl;

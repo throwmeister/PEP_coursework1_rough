@@ -43,7 +43,7 @@ public:
 
 // TODO: write code here:
 
-void createPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, std::vector<std::string> &vals,
+void createPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
  std::vector<std::string> &permutation, std::vector<bool> &distinctVal){
 
     if (permutation.size() == vals.size()){

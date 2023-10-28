@@ -72,7 +72,6 @@ void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &
         finalPermutations.push_back(permutation);
         return;
     }
-
     for (int i = 0; i < vals.size(); i++){
         // recursion loop
         // {x - / *}
@@ -83,7 +82,6 @@ void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &
 
 }
  
-
 std::vector<std::vector<std::string>> permuteString(const std::vector<std::string> &vals, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
@@ -95,10 +93,15 @@ std::vector<std::vector<std::string>> permuteString(const std::vector<std::strin
 std::vector<std::vector<std::string>> permuteOperators(const std::vector<std::string> &ops, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<std::string> _p;
+    std::cout << "This ran right?\n";
     createOperatorPermutationsRecursion(permutations, ops, _p, targetSize);
     return permutations;
 }
 
+std::vector<std::vector<std::string>> permuteRPNexp(const std::vector<std::string> &expression, const int targetSize){
+    auto t = permuteString(expression, targetSize);
+    return t;
+}
 
 
 
@@ -132,24 +135,47 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
     */
 
     // 5 Layers 1-5
-    for (int i = 1; i < 3; i++){
-        std::vector<std::vector<std::string>> finalNums = permuteString(strNums, i+1);
-        std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, i);
-        std::vector<std::vector<std::string>> finalRPNs;
+    
+    std::vector<std::vector<std::string>> finalRPNs;
+    for (int numOfNums = 2; numOfNums < 3; numOfNums++){
+        std::vector<std::vector<std::string>> finalNums = permuteString(strNums, numOfNums+1);
+        std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, numOfNums);
 
         for(auto &expression: finalNums){
-            std::vector<std::string> buildRPN;
+            std::vector<std::string> staticRPNStart;
 
             for (int _ = 0; _<2; _++){
-                buildRPN.push_back(expression[0]);
+                staticRPNStart.push_back(expression[0]);
                 expression.pop_back();
             }
-            
+            // staticRPNStart == {"1", "2"}
+            // expression = {"3", "4", "5"}
+            for(const auto &op: finalOps){
+                // op = {"+", "/", "-", "+"}
+                std::vector<std::string> permutateExpression(expression);
+                permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
 
+                // permutateExpression = {"3", "4", "5", "+", "/", ...}
+
+                std::vector<std::vector<std::string>> thisRPNExpressions = permuteRPNexp(permutateExpression, permutateExpression.size());
+                
+                for(const auto &partRPNexpression: thisRPNExpressions){
+                    std::vector<std::string> fullRPNString(staticRPNStart);
+                    fullRPNString.insert(fullRPNString.end(), partRPNexpression.begin(), partRPNexpression.end());
+
+                    finalRPNs.insert(finalRPNs.end(), fullRPNString.begin(), fullRPNString.end());
+                }
+
+            }
         }
-
     }
-    
+
+    for (const std::vector<std::string>& expressions : finalRPNs) {
+        for (const std::string &exp: expressions){
+            std::cout << exp << " ";
+        }
+        std::cout << "\n";
+    }
     
 
     CountdownSolution c;

@@ -121,10 +121,13 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
     }
 
     const std::vector<std::string> strNums = tmpStrNums;
-    /*
-    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums, 5);
 
-    std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, 5);
+    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums, 5);
+    std::vector<std::vector<std::string>> finalOpstmp = permuteOperators(operators, 5);
+    /*
+    
+
+    
 
     for (const std::vector<std::string>& expression : finalSolution) {
         for (const std::string &exp: expression){
@@ -137,19 +140,37 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
     // 5 Layers 1-5
     
     std::vector<std::vector<std::string>> finalRPNs;
-    for (int numOfNums = 2; numOfNums < 3; numOfNums++){
+    for (int numOfNums = 3; numOfNums < 4; numOfNums++){
         std::vector<std::vector<std::string>> finalNums = permuteString(strNums, numOfNums+1);
         std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, numOfNums);
 
+        std::cout << "Breakpoint\n";
         for(auto &expression: finalNums){
             std::vector<std::string> staticRPNStart;
 
-            for (int _ = 0; _<2; _++){
-                staticRPNStart.push_back(expression[0]);
+            for (int i = 0; i<2; i++){
+                std::cout << expression.back() << "\n";
+                staticRPNStart.push_back(expression.back());
                 expression.pop_back();
             }
-            // staticRPNStart == {"1", "2"}
-            // expression = {"3", "4", "5"}
+
+            // staticRPNStart == {"5", "4"}
+            // expression = {"1", "2", "3"}
+            for(const auto &op: finalOps){
+                // possible way to shorten this: reduce number of loops
+                std::vector<std::string> permutateExpression(expression);
+                permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
+
+                for (auto &n: permutateExpression){
+                    std::cout << n;
+                }
+                std::cout << "\n";
+            }
+        }
+
+            /*
+            // staticRPNStart == {"5", "4"}
+            // expression = {"1", "2", "3"}
             for(const auto &op: finalOps){
                 // op = {"+", "/", "-", "+"}
                 std::vector<std::string> permutateExpression(expression);
@@ -168,14 +189,17 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
             }
         }
+    */
     }
-
+    
+    /*
     for (const std::vector<std::string>& expressions : finalRPNs) {
         for (const std::string &exp: expressions){
             std::cout << exp << " ";
         }
         std::cout << "\n";
     }
+    */
     
 
     CountdownSolution c;

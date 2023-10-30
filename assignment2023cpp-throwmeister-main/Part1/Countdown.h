@@ -102,7 +102,36 @@ void createPatternPermutationsRecursion(std::vector<std::vector<int>> &finalPerm
         }
     }
 }
- 
+
+void createPatternPermutations(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
+ std::vector<int> &permutation, const int targetSize, int &operands, int &operators){
+     if (permutation.size() == targetSize){
+        // Push finished permutation onto vector
+        if (operands==targetSize-5 && operators==targetSize-4){
+            finalPermutations.push_back(permutation);
+        }
+        return;
+    }
+    for (int i = 0; i < vals.size(); i++){
+        // Checker for distinct value
+        auto var = vals[i];
+        permutation.push_back(var);
+        if (var==1){
+            operands += 1;
+        } else{
+            operators += 1;
+        }
+        createPatternPermutations(finalPermutations, vals, permutation, targetSize, operands, operators);
+        
+        if (permutation.back()==1){
+            operands -= 1;
+        } else{
+            operators -= 1;
+        }
+        permutation.pop_back();
+    }
+
+ }
 std::vector<std::vector<std::string>> permuteString(const std::vector<std::string> &vals, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
@@ -123,8 +152,36 @@ std::vector<std::vector<int>> permutePattern(const std::vector<int> &vals, const
     std::vector<std::vector<int>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
     std::vector<int> _p;
-    createPatternPermutationsRecursion(permutations, vals, _p, distinctVals, targetSize);
+    int x = 0;
+    int y = 0;
+    createPatternPermutations(permutations, vals, _p, targetSize, x, y);
 
+    auto it = permutations.begin();
+
+    while(it != permutations.end()){
+        int operators = 0;
+        int operands = 0;
+        bool fail = false;
+        for(auto &val: *it){
+            if(val==1){
+                operands += 1;
+            } else{
+                operators += 1;
+            }
+            if (operators>operands+1){
+                fail = true;
+                break;
+            }
+        }
+        if (fail){
+            permutations.erase(it);
+            continue;
+        }
+        it++;
+    }
+    for (auto &exp: permutations){
+        
+    }
     return permutations;
 }
 
@@ -136,13 +193,17 @@ std::vector<std::vector<int>> permuteAbstractOpCombos(const int numOfOps){
     // +
 
     // redo algorithm to be much more efficient
-    std::vector<int> abstractOp;
+    /*
+    
     for (int i=0; i<numOfOps-1; i++){
         abstractOp.push_back(1);
     }
     for (int i=0; i<numOfOps; i++){
         abstractOp.push_back(0);
     }
+    auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
+    */
+    std::vector<int> abstractOp = {1, 0};
     auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
     std::cout << "One permutation\n";
     return pattern;
@@ -192,10 +253,6 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
             for(const auto &op: finalOps){
                 // +++++
-
-                //std::vector<std::string> permutateExpression(expression);
-                //permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
-
                 // Match operators and operands to pattern
                 for(auto const &pattern: rpnTemplates){
                     std::vector<std::string> opTmp(op);
@@ -212,20 +269,9 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
                             opTmp.pop_back();
                         }
                     }
-                    finalRPNs.push_back(exp);
-
                 }
-
-                // std::vector<std::vector<std::string>> currentExpressionPerms = permuteString(permutateExpression, permutateExpression.size());
             }
         }
-    }
-
-    for(auto &rpn: finalRPNs){
-        for(auto &ch: rpn){
-            std::cout<<ch;
-        }
-        std::cout<<"\n";
     }
     
     /*

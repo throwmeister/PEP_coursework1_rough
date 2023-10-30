@@ -64,6 +64,24 @@ void createStrPermutationsRecursion(std::vector<std::vector<std::string>> &final
     }
 }
 
+void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
+ std::vector<std::string> &permutation, const int targetSize){
+    // Does not check for uniqueness in vals
+    if (permutation.size() == targetSize){
+        // Push finished permutation onto vector
+        finalPermutations.push_back(permutation);
+        return;
+    }
+    for (int i = 0; i < vals.size(); i++){
+        // recursion loop
+        // {x - / *}
+        permutation.push_back(vals[i]);
+        createOperatorPermutationsRecursion(finalPermutations, vals, permutation, targetSize);
+        permutation.pop_back();
+    }
+
+}
+
 void createPatternPermutationsRecursion(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
  std::vector<int> &permutation, std::vector<bool> &distinctVal, const int targetSize){
     // Checks for uniqueness in vals
@@ -83,25 +101,6 @@ void createPatternPermutationsRecursion(std::vector<std::vector<int>> &finalPerm
             permutation.pop_back();
         }
     }
-}
-
-
-void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
- std::vector<std::string> &permutation, const int targetSize){
-    // Does not check for uniqueness in vals
-    if (permutation.size() == targetSize){
-        // Push finished permutation onto vector
-        finalPermutations.push_back(permutation);
-        return;
-    }
-    for (int i = 0; i < vals.size(); i++){
-        // recursion loop
-        // {x - / *}
-        permutation.push_back(vals[i]);
-        createOperatorPermutationsRecursion(finalPermutations, vals, permutation, targetSize);
-        permutation.pop_back();
-    }
-
 }
  
 std::vector<std::vector<std::string>> permuteString(const std::vector<std::string> &vals, const int targetSize){

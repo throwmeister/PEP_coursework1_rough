@@ -103,6 +103,25 @@ std::vector<std::vector<std::string>> permuteRPNexp(const std::vector<std::strin
     return t;
 }
 
+std::vector<std::vector<std::string>> permuteAbstractOpCombos(const int numOfOps){
+    // aaaa+++++ ts=9 os=4
+    // aaa++++
+    // aa+++
+    // a++
+    // +
+    std::vector<std::string> abstractOp;
+    for (int i=0; i<numOfOps-1; i++){
+        abstractOp.push_back("a");
+    }
+    for (int i=0; i<numOfOps; i++){
+        abstractOp.push_back("b");
+    }
+
+    auto pattern = permuteString(abstractOp, (numOfOps*2)-1);
+    std::cout << "One permutation\n";
+    return pattern;
+}
+
 
 
 CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targetNum){
@@ -122,74 +141,49 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
     const std::vector<std::string> strNums = tmpStrNums;
 
-    std::vector<std::vector<std::string>> finalSolution = permuteString(strNums, 5);
-    std::vector<std::vector<std::string>> finalOpstmp = permuteOperators(operators, 5);
-    /*
-    
-
-    
-
-    for (const std::vector<std::string>& expression : finalSolution) {
-        for (const std::string &exp: expression){
-            std::cout << exp << " ";
-        }
-        std::cout << "\n";
-    }
-    */
-
     // 5 Layers 1-5
     
     std::vector<std::vector<std::string>> finalRPNs;
-    for (int numOfNums = 3; numOfNums < 4; numOfNums++){
-        std::vector<std::vector<std::string>> finalNums = permuteString(strNums, numOfNums+1);
-        std::vector<std::vector<std::string>> finalOps = permuteOperators(operators, numOfNums);
 
+    for (int numOfOps = 5; numOfOps < 6; numOfOps++){
+
+        auto finalNums = permuteString(strNums, numOfOps+1);
+        auto finalOps = permuteOperators(operators, numOfOps);
+        auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
+
+        //std::vector<std::vector<std::string>> staticNums = permuteString(strNums, 2); 1,2
+        //std::vector<std::vector<std::string>> rpnExpressions = permuteString(strNums, numOfOps-1);
         std::cout << "Breakpoint\n";
+
+        for(auto const &pattern: rpnTemplates){
+            for(auto const &p: pattern){
+                if(p=="a"){
+                    
+                } else{
+                    
+                }
+            }
+        }
+
         for(auto &expression: finalNums){
             std::vector<std::string> staticRPNStart;
 
             for (int i = 0; i<2; i++){
-                std::cout << expression.back() << "\n";
+                //std::cout << expression.back() << "\n";
                 staticRPNStart.push_back(expression.back());
                 expression.pop_back();
             }
-
             // staticRPNStart == {"5", "4"}
             // expression = {"1", "2", "3"}
+
             for(const auto &op: finalOps){
                 // possible way to shorten this: reduce number of loops
                 std::vector<std::string> permutateExpression(expression);
                 permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
 
-                for (auto &n: permutateExpression){
-                    std::cout << n;
-                }
-                std::cout << "\n";
+                // std::vector<std::vector<std::string>> currentExpressionPerms = permuteString(permutateExpression, permutateExpression.size());
             }
         }
-
-            /*
-            // staticRPNStart == {"5", "4"}
-            // expression = {"1", "2", "3"}
-            for(const auto &op: finalOps){
-                // op = {"+", "/", "-", "+"}
-                std::vector<std::string> permutateExpression(expression);
-                permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
-
-                // permutateExpression = {"3", "4", "5", "+", "/", ...}
-
-                std::vector<std::vector<std::string>> thisRPNExpressions = permuteRPNexp(permutateExpression, permutateExpression.size());
-                
-                for(const auto &partRPNexpression: thisRPNExpressions){
-                    std::vector<std::string> fullRPNString(staticRPNStart);
-                    fullRPNString.insert(fullRPNString.end(), partRPNexpression.begin(), partRPNexpression.end());
-
-                    finalRPNs.insert(finalRPNs.end(), fullRPNString.begin(), fullRPNString.end());
-                }
-
-            }
-        }
-    */
     }
     
     /*
@@ -199,6 +193,11 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
         }
         std::cout << "\n";
     }
+
+    for (auto &n: permutateExpression){
+                    std::cout << n;
+                }
+                std::cout << "\n";
     */
     
 

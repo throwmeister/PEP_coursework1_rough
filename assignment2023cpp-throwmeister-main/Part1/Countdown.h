@@ -43,7 +43,7 @@ public:
 
 // TODO: write code here:
 
-void createNumPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
+void createStrPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
  std::vector<std::string> &permutation, std::vector<bool> &distinctVal, const int targetSize){
     // Checks for uniqueness in vals
     if (permutation.size() == targetSize){
@@ -57,12 +57,34 @@ void createNumPermutationsRecursion(std::vector<std::vector<std::string>> &final
             // recursion loop
             distinctVal[i] = true;
             permutation.push_back(vals[i]);
-            createNumPermutationsRecursion(finalPermutations, vals, permutation, distinctVal, targetSize);
+            createStrPermutationsRecursion(finalPermutations, vals, permutation, distinctVal, targetSize);
             distinctVal[i] = false;
             permutation.pop_back();
         }
     }
 }
+
+void createPatternPermutationsRecursion(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
+ std::vector<int> &permutation, std::vector<bool> &distinctVal, const int targetSize){
+    // Checks for uniqueness in vals
+    if (permutation.size() == targetSize){
+        // Push finished permutation onto vector
+        finalPermutations.push_back(permutation);
+        return;
+    }
+    for (int i = 0; i < vals.size(); i++){
+        // Checker for distinct value
+        if (!distinctVal[i]){
+            // recursion loop
+            distinctVal[i] = true;
+            permutation.push_back(vals[i]);
+            createPatternPermutationsRecursion(finalPermutations, vals, permutation, distinctVal, targetSize);
+            distinctVal[i] = false;
+            permutation.pop_back();
+        }
+    }
+}
+
 
 void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
  std::vector<std::string> &permutation, const int targetSize){
@@ -86,7 +108,7 @@ std::vector<std::vector<std::string>> permuteString(const std::vector<std::strin
     std::vector<std::vector<std::string>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
     std::vector<std::string> _p;
-    createNumPermutationsRecursion(permutations, vals, _p, distinctVals, targetSize);
+    createStrPermutationsRecursion(permutations, vals, _p, distinctVals, targetSize);
     return permutations;
 }
 
@@ -98,26 +120,31 @@ std::vector<std::vector<std::string>> permuteOperators(const std::vector<std::st
     return permutations;
 }
 
-std::vector<std::vector<std::string>> permuteRPNexp(const std::vector<std::string> &expression, const int targetSize){
-    auto t = permuteString(expression, targetSize);
-    return t;
+std::vector<std::vector<int>> permutePattern(const std::vector<int> &vals, const int targetSize){
+    std::vector<std::vector<int>> permutations;
+    std::vector<bool> distinctVals(vals.size(), false);
+    std::vector<int> _p;
+    createPatternPermutationsRecursion(permutations, vals, _p, distinctVals, targetSize);
+
+    return permutations;
 }
 
-std::vector<std::vector<std::string>> permuteAbstractOpCombos(const int numOfOps){
+std::vector<std::vector<int>> permuteAbstractOpCombos(const int numOfOps){
     // aaaa+++++ ts=9 os=4
     // aaa++++
     // aa+++
     // a++
     // +
-    std::vector<std::string> abstractOp;
+
+    // redo algorithm to be much more efficient
+    std::vector<int> abstractOp;
     for (int i=0; i<numOfOps-1; i++){
-        abstractOp.push_back("a");
+        abstractOp.push_back(1);
     }
     for (int i=0; i<numOfOps; i++){
-        abstractOp.push_back("b");
+        abstractOp.push_back(0);
     }
-
-    auto pattern = permuteString(abstractOp, (numOfOps*2)-1);
+    auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
     std::cout << "One permutation\n";
     return pattern;
 }
@@ -127,8 +154,6 @@ std::vector<std::vector<std::string>> permuteAbstractOpCombos(const int numOfOps
 CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targetNum){
     // bruteforce: build every possible rpn expression until the target number is reached or the closest#
     // Idea: when bulding the rpn string, check if + and * expressions do the same thing: prevent repeat evalutations
-
-    
     int closestTarget = 0;
     const std::vector<std::string> operators = { "+", "-", "*", "/" };
     
@@ -150,21 +175,11 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
         auto finalNums = permuteString(strNums, numOfOps+1);
         auto finalOps = permuteOperators(operators, numOfOps);
         auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
+        
 
         //std::vector<std::vector<std::string>> staticNums = permuteString(strNums, 2); 1,2
         //std::vector<std::vector<std::string>> rpnExpressions = permuteString(strNums, numOfOps-1);
         std::cout << "Breakpoint\n";
-
-        for(auto const &pattern: rpnTemplates){
-            for(auto const &p: pattern){
-                if(p=="a"){
-                    
-                } else{
-                    
-                }
-            }
-        }
-
         for(auto &expression: finalNums){
             std::vector<std::string> staticRPNStart;
 
@@ -173,17 +188,45 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
                 staticRPNStart.push_back(expression.back());
                 expression.pop_back();
             }
-            // staticRPNStart == {"5", "4"}
-            // expression = {"1", "2", "3"}
+            // staticRPNStart == {"6", "5"}
+            // expression = {"1", "2", "3", "4"}
 
             for(const auto &op: finalOps){
-                // possible way to shorten this: reduce number of loops
-                std::vector<std::string> permutateExpression(expression);
-                permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
+                // +++++
+
+                //std::vector<std::string> permutateExpression(expression);
+                //permutateExpression.insert(permutateExpression.end(), op.begin(), op.end());
+
+                // Match operators and operands to pattern
+                for(auto const &pattern: rpnTemplates){
+                    std::vector<std::string> opTmp(op);
+                    std::vector<std::string> expTmp(expression);
+                    std::vector<std::string> exp(staticRPNStart);
+                    for(auto const &p: pattern){
+                        // 1 = operand
+                        // 0 = operator
+                        if(p==1){
+                            exp.push_back(expTmp.back());
+                            expTmp.pop_back();
+                        } else{
+                            exp.push_back(opTmp.back());
+                            opTmp.pop_back();
+                        }
+                    }
+                    finalRPNs.push_back(exp);
+
+                }
 
                 // std::vector<std::vector<std::string>> currentExpressionPerms = permuteString(permutateExpression, permutateExpression.size());
             }
         }
+    }
+
+    for(auto &rpn: finalRPNs){
+        for(auto &ch: rpn){
+            std::cout<<ch;
+        }
+        std::cout<<"\n";
     }
     
     /*

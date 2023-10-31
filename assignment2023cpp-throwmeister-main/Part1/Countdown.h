@@ -236,7 +236,6 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
         auto finalOps = permuteOperators(operators, numOfOps);
         auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
         
-
         //std::vector<std::vector<std::string>> staticNums = permuteString(strNums, 2); 1,2
         //std::vector<std::vector<std::string>> rpnExpressions = permuteString(strNums, numOfOps-1);
         std::cout << "Breakpoint\n";

@@ -5,7 +5,7 @@ using std::string;
 using std::cout;
 
 int main(){
-    string str = "xzxpzxzxpq";
+    string str = "aaaa";
     int x = stringConstruction(str, 11, 10);
     cout << "total count: " << x << "\n";
     return 0;

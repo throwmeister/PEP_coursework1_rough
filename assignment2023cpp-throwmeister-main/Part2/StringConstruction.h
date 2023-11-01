@@ -6,6 +6,7 @@ using std::string;
 #include <vector>
 using std::vector;
 #include <iostream>
+#include <algorithm>
 // TODO: your code goes here:
 
 struct stringConstructData
@@ -14,6 +15,30 @@ struct stringConstructData
     int currCost;
 };
 
+int biggestSubstrLen(const string &str1, const string &str2){
+    int mx = 0;
+    int prev = 0;
+
+    auto it = str1.begin();
+
+    while(it != str1.end()){
+        char d = str2[prev];
+        char c = *it;
+        if(c==d){
+            prev++;
+        } else{
+            mx = std::max(mx, prev);
+            if (prev > 0){
+                prev = 0;
+                continue;
+            }
+            prev = 0;
+        }
+        it++;
+    }
+    mx = std::max(mx, prev);
+    return mx;
+}
 
 int stringConstruction(const string &targetStr, const int cloneCost, const int appendCost){
     string endStr = "";
@@ -21,9 +46,6 @@ int stringConstruction(const string &targetStr, const int cloneCost, const int a
     int const targetSize = targetStr.size();
     
     vector<stringConstructData> clones;
-
-    int biggestCurrentSubstr;
-
     // Find if next part of targetStr is a substring
     while (endStr.size() != targetSize){  
         int const endSize = endStr.size();
@@ -36,29 +58,35 @@ int stringConstruction(const string &targetStr, const int cloneCost, const int a
         } else{
             lenOfSubstr = targetSizeLeft;
         }
+
+        string substringL = targetStr.substr(endSize, lenOfSubstr);
+        int len = biggestSubstrLen(endStr, substringL);
+        /*
         for(int n = 0; (n<endSize) && (targetSizeLeft>n); n++){
             string substringL = targetStr.substr(endSize, lenOfSubstr-n);
-            //string substringS = targetStr.substr(endSize, n);
             int substringPos = endStr.find(substringL);
-            //int substringHas = endStr.find(substringS);
-            if ((substringPos != string::npos) && (substringL.length() > 1)){
+            if ((substringPos != string::npos)){
                 foundSubstring = substringL.length();
                 break;
             }
         }
+
+        if (foundSubstring!= len){
+            std::cout<< "lengths were not the same on iteration:" << endSize << "\n";
+        }
+        */
         // Clone or append
-        if (!(foundSubstring<1) && ( (cloneCost/foundSubstring) < appendCost)){
+        if (!(len<2) && ( (cloneCost/len) < appendCost)){
             // Clone possible
             stringConstructData tmp;
             tmp.currCost = totalCost+cloneCost;
-            tmp.currStrSize = endStr.length()+foundSubstring;
+            tmp.currStrSize = endStr.length()+len;
             clones.push_back(tmp);
 
             // endStr += foundSubstring;
             // totalCost += cloneCost;
         }
         
-
         endStr.push_back(targetStr[endSize]);
         totalCost += appendCost;
 

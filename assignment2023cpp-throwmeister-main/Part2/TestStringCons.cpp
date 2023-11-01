@@ -70,7 +70,7 @@ int main() {
     cout << "Big target string testcase, using a " << doubleIt.size() << " character test string.  An excellent solution will complete in around a hundredth of a second.\n";
     cout << "(Note -- if the program freezes at this point, Ctrl+C will stop it from running)\n";
 
-    int result = stringConstruction(trippleIt, 1235, 1234);
+    int result = stringConstruction(doubleIt, 1235, 1234);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);

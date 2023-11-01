@@ -20,21 +20,21 @@ int biggestSubstrLen(const string &str1, const string &str2){
     int prev = 0;
 
     auto it = str1.begin();
+    char start = str2[0];
 
-    while(it != str1.end()){
+    for(char c: str1){
         char d = str2[prev];
-        char c = *it;
         if(c==d){
             prev++;
         } else{
             mx = std::max(mx, prev);
-            if (prev > 0){
+            if(prev>0){
                 prev = 0;
-                continue;
+                if(c==start){
+                    prev++;
+                }
             }
-            prev = 0;
         }
-        it++;
     }
     mx = std::max(mx, prev);
     return mx;

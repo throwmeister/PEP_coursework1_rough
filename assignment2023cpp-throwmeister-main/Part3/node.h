@@ -11,15 +11,26 @@ using std::endl;
 // (Note the 'NodeIterator' class will report lots of errors until Node exists)
 
 template<typename T>
+class Node {
+public:
+    T data;
+    Node<T>* next;
+    Node<T>* previous;
+
+    Node(T inpData): data(inpData){
+        next = nullptr;
+        previous = nullptr;
+    }
+
+};
+
+template<typename T>
 class NodeIterator {
   
 private:
-    
     Node<T>* current;
     
 public:
-    
-
     NodeIterator(Node<T>* currentIn)
         : current(currentIn) {        
     }
@@ -28,9 +39,25 @@ public:
         return current->data;
     }
 
+    void operator++(){
+        current = current->next;
+    }
+
+    bool operator==(const NodeIterator<T> &other){
+        if(current==other.current){
+            return true;
+        }
+        return false;
+    }
+
+    bool operator!=(const NodeIterator<T> &other){
+        if(current==other.current){
+            return false;
+        }
+        return true;
+    }
     // TODO: complete the code for NodeIterator here
         
-    
 };
 
 // do not edit below this line

@@ -16,7 +16,7 @@ int main() {
     {
         
         LinkedList<int> aList{2,4,6,8};
-
+    
         vector<int> numbersOut;
         
         for (auto & n : aList) { // uses begin() and end() to loop over aList
@@ -36,7 +36,7 @@ int main() {
             cout << " }\n";
         }
     }
-
+    
     {
         
         LinkedList<int> aList{2,4,6,8};
@@ -115,7 +115,6 @@ int main() {
     }
     
     return retval;
-    
         
 }
 

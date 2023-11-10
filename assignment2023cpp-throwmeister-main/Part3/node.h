@@ -21,17 +21,6 @@ public:
         next = nullptr;
         previous = nullptr;
     }
-    /*
-    ~Node(){
-        if(next){
-            delete next;
-        }
-        if(previous){
-            delete previous;
-        }
-    }
-    */
-
 };
 
 template<typename T>
@@ -65,6 +54,10 @@ public:
             return false;
         }
         return true;
+    }
+
+    Node<T>* getCurrNode(){
+        return current;
     }
     // TODO: complete the code for NodeIterator here
         

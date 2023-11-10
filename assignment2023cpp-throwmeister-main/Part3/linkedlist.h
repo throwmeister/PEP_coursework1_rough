@@ -4,7 +4,7 @@
 #include "node.h"
 
 #include <utility>
-
+#include <initializer_list>
 // Do not add any #include statements here.  If you have a convincing need for adding a different `#include` please post in the forum on KEATS.
 
 // TODO your code goes here:
@@ -19,44 +19,83 @@ private:
 
 public:
     LinkedList(){
-
+        head = nullptr;
+        tail = nullptr;
+        numOfElements = 0;
     }
-
+    
     ~LinkedList(){
-
+        for(int i=0; i<numOfElements; i++){
+            Node<T>* t = head->next;
+            delete head;
+            head = t;
+        }
+        tail = nullptr;
+        head = nullptr;
     }
 
-    void push_front(T &val){
-
+    void push_front(const T &val){
+        Node<T>* tmp = new Node<T>(val);
+        if (head){
+            tmp->next = head;
+            head->previous = tmp;
+            head = tmp;
+            
+        } else{
+            head = tmp;
+            tail = tmp;
+        }
+        numOfElements++;
     }
 
     T& front(){
         return head->data;
     }
 
-    void push_back(T &val){
-
+    void push_back(const T &val){
+        Node<T>* tmp = new Node<T>(val);
+        if (tail){
+            tmp->previous = tail;
+            tail->next = tmp;
+            tail = tmp;
+        } else{
+            head = tmp;
+            tail = tmp;
+        }
+        numOfElements++;
     }
 
     T& back(){
         return tail->data;
     }
 
-    int size(){
+    const int size(){
         return numOfElements;
     }
 
-    NodeIterator<T>& begin(){
-        tmp = NodeIterator<T>(head);
+    NodeIterator<T> begin(){
+        NodeIterator<T> tmp(head);
         return tmp;
     }
 
-    NodeIterator<T>& end(){
-        return tail->next;
+    NodeIterator<T> end(){
+        NodeIterator<T> nullIterator(nullptr);
+        return nullIterator;
     }
 
     void reverse(){
-        
+        if(head){
+            Node<T>* tmpPtr = nullptr;
+            Node<T>* var = head->next;
+            for(int i=0; i<numOfElements; i++){
+                head->previous = head->next;
+                head->next = tmpPtr;
+                tmpPtr = head;
+                head = head->previous;
+            }
+            tail = head;
+            head = tmpPtr;
+        }
     }
 };
 

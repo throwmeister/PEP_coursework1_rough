@@ -21,6 +21,16 @@ public:
         next = nullptr;
         previous = nullptr;
     }
+    /*
+    ~Node(){
+        if(next){
+            delete next;
+        }
+        if(previous){
+            delete previous;
+        }
+    }
+    */
 
 };
 
@@ -35,7 +45,7 @@ public:
         : current(currentIn) {        
     }
 
-    T & operator*() {
+    T& operator*() {
         return current->data;
     }
 

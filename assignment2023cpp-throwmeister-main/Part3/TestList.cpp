@@ -14,7 +14,6 @@ int main() {
     {
 
         // these tests need push_front and front
-        
         LinkedList<int> aList;
     
         aList.push_front(3);
@@ -25,7 +24,9 @@ int main() {
         } else {
             ++retval;
             cout << "1) Fail: pushing 3 then 4 onto the front of a list should give a list with 4 at the front, but it actually has " << aList.front() << " at the front\n";
-        }             
+        }
+        
+               
     }
     
     {
@@ -118,7 +119,6 @@ int main() {
             cout << " }\n";
         }
     }
-
     {
         // this test needs push_back(), begin(), end() and reverse()
         
@@ -156,6 +156,5 @@ int main() {
     
     
     return retval;
-    
 }
 

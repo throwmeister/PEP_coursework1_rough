@@ -63,6 +63,38 @@ public:
         
 };
 
+template<typename T>
+class NodeIteratorConst {
+private:
+    Node<T>* current;
+    
+public:
+    NodeIteratorConst(Node<T>* currentIn)
+        : current(currentIn) {        
+    }
+
+    const T& operator*() const{
+        return current->data;
+    }
+
+    void operator++(){
+        current = current->next;
+    }
+
+    bool operator==(const NodeIteratorConst<T> &other){
+        if(current==other.current){
+            return true;
+        }
+        return false;
+    }
+
+    bool operator!=(const NodeIteratorConst<T> &other){
+        if(current==other.current){
+            return false;
+        }
+        return true;
+    }
+};
 // do not edit below this line
 
 #endif

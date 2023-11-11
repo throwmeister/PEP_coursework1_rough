@@ -27,7 +27,7 @@ public:
     LinkedList(const std::initializer_list<T> initList){
         head = nullptr;
         tail = nullptr;
-        numOfElements = 0;
+        numOfElements = initList.size();
         for(auto &num: initList){
             Node<T>* tmp = new Node<T>(num);
             if(head){
@@ -42,6 +42,7 @@ public:
     }
     
     ~LinkedList(){
+        // Only data that was created with new was each node
         for(int i=0; i<numOfElements; i++){
             Node<T>* t = head->next;
             delete head;
@@ -65,7 +66,7 @@ public:
         numOfElements++;
     }
 
-    const T& front(){
+    T& front() const{
         return head->data;
     }
 
@@ -82,21 +83,28 @@ public:
         numOfElements++;
     }
 
-    const T& back(){
+    T& back() const{
         return tail->data;
     }
 
-    const int size(){
+    int size() const{
         return numOfElements;
     }
 
-    NodeIterator<T> begin() const{
+    NodeIterator<T> begin(){
         return NodeIterator<T>(head);
     }
 
-    NodeIterator<T> end() const{
-        NodeIterator<T> nullIterator(nullptr);
-        return nullIterator;
+    NodeIteratorConst<T> begin() const{
+        return NodeIteratorConst<T>(head);
+    }
+
+    NodeIterator<T> end(){
+        return NodeIterator<T>(nullptr);
+    }
+
+    NodeIteratorConst<T> end() const{
+        return NodeIteratorConst<T>(nullptr);
     }
 
     void reverse(){
@@ -146,28 +154,33 @@ public:
 
         if(numOfElements==1){
             // Case 0: one element list
+
             delete currNode;
             head = nullptr;
             tail = nullptr;
         } else if(currNode==head){
             // Case 1: erase element is the head of the list
             returnNode = currNode->next;
-            returnNode->previous = nullptr;
+
             delete currNode;
+            returnNode->previous = nullptr;
             head = returnNode;
         } else if(currNode==tail){
             // Case 2: erase element is the tail of the list
-            returnNode = currNode->previous;
-            returnNode->next = nullptr;
+            tail = currNode->previous;
+
             delete currNode;
-            tail = returnNode;
+            tail->next = nullptr;
+            returnNode = nullptr;
+
         } else{
             // Case 3: erase element is inbetween
             Node<T>* prevNode = currNode->previous;
             returnNode = currNode->next;
+
+            delete currNode;
             prevNode->next = returnNode;
             returnNode->previous = prevNode;
-            delete currNode;
         }
         numOfElements--;
         return NodeIterator<T>(returnNode);

@@ -122,7 +122,7 @@ public:
         }
     }
 
-    NodeIterator<T> insert(NodeIterator<T>& it, const T& val){
+    NodeIterator<T> insert(NodeIterator<T> it, const T& val){
         Node<T>* tmp = new Node<T>(val);
         if(head){
             Node<T>* currNode = it.getCurrNode();
@@ -148,7 +148,7 @@ public:
         return NodeIterator<T>(tmp);
     }
 
-    NodeIterator<T> erase(NodeIterator<T>& it){
+    NodeIterator<T> erase(NodeIterator<T> it){
         Node<T>* currNode = it.getCurrNode();
         Node<T>* returnNode;
 

@@ -10,6 +10,10 @@ class SetSolverSquareSet
 public:
     std::vector<int>set;
     SetSolverSquareSet(){
+        std::vector<int> set(9);
+        for(int i = 1; i<10; i++){
+            set.push_back(i);
+        }
         //Write your constructor here
     }
 

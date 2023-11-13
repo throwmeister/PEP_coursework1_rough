@@ -17,27 +17,49 @@ private:
     vector<vector<SetSolverSquareSet>>board;
     
 public:
-SetSolver()
-{
-    //implement your code here
-}
-void PopulateBoard(vector<string>skeletonBoard)
-{
-    // implement your code here
-}
-    
-int ReturnValue(size_t row, size_t col)
-{
-    // implement your code here and
-    
-    //return the right value
-    return 0;//This line was added temporarily 
-}
-    
-void Solve()
-{
-    // implement your code here
-}
+    SetSolver()
+    {
+        //implement your code here
+    }
+    void PopulateBoard(vector<string>skeletonBoard)
+    {
+        // for each line
+        for(std::size_t i=0; i<skeletonBoard.size(); i++){
+            string reader = skeletonBoard[i];
+            bool negative = false;
+            for(auto& r: reader){
+                if(r=='*'){
+                    std::cout << "e ";
+                } else if(r=='-'){
+                    std::cout << "-";
+                    negative = true;
+                } else{
+                    if(negative){
+                        std::cout << "nn ";
+                        negative = false;
+                    }
+                    else{
+                        std::cout << "n ";
+                    }
+                }
+            }
+            std::cout << "\n";
+        }
+    }
+        
+    int ReturnValue(size_t row, size_t col)
+    {
+        // implement your code here and
+        
+        //return the right value
+        return 0;//This line was added temporarily 
+    }
+        
+    void Solve()
+    {
+        // implement your code here
+    }
+
 //Don't edit below this line    
     
 };

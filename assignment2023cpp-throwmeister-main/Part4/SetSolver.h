@@ -14,6 +14,8 @@ class SetSolver
 {
 private:
     int boardSize = 9;
+    // aka vector of a vector of a vector
+    //[[[]], [[]], [[1,2,3..]], ]
     vector<vector<SetSolverSquareSet>>board;
     
 public:
@@ -23,25 +25,38 @@ public:
     }
     void PopulateBoard(vector<string>skeletonBoard)
     {
+        // Initialise vector size 9x9
+        vector<vector<SetSolverSquareSet>> board(boardSize, vector<SetSolverSquareSet>(boardSize));
+
         // for each line
-        for(std::size_t i=0; i<skeletonBoard.size(); i++){
+        for(std::size_t i=0; i<boardSize; i++){
             string reader = skeletonBoard[i];
             bool negative = false;
+            int j = 0;
             for(auto& r: reader){
                 if(r=='*'){
                     std::cout << "e ";
+                    board[i][j] = SetSolverSquareSet(99);
+
                 } else if(r=='-'){
                     std::cout << "-";
                     negative = true;
+                    continue;
                 } else{
                     if(negative){
                         std::cout << "nn ";
+                        int a = r;
+                        a *= -1;
+                        board[i][j] = SetSolverSquareSet(a);
                         negative = false;
-                    }
-                    else{
+                    } else{
+                        int b = r;
+                        board[i][j] = SetSolverSquareSet(b);
                         std::cout << "n ";
                     }
                 }
+                j++;
+
             }
             std::cout << "\n";
         }

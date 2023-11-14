@@ -24,6 +24,7 @@ int main()
                             "043-608*0-1"};
 
         board->PopulateBoard(skeletonBoard);
-    
+
+        std::cout << board->ReturnValue(0, 1) << "\n";
     }
 }

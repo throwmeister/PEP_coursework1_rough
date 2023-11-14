@@ -10,13 +10,18 @@ class SetSolverSquareSet
 public:
     std::vector<int>set;
     int readValue;
-    SetSolverSquareSet(int i){
-        readValue = i;
+    
+    SetSolverSquareSet(){
+        readValue = 99;
+    }
+    SetSolverSquareSet(int i): readValue(i){
         if(i==99){
             std::vector<int> set(9);
             for(int i = 1; i<10; i++){
                 set.push_back(i);
             }
+        } else{
+            std::vector<int> set(1);
         }
         //Write your constructor here
     }

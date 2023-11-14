@@ -21,12 +21,12 @@ private:
 public:
     SetSolver()
     {
-        //implement your code here
+         vector<vector<SetSolverSquareSet>> b(boardSize, vector<SetSolverSquareSet>(boardSize));
+         board = b;
     }
     void PopulateBoard(vector<string>skeletonBoard)
     {
         // Initialise vector size 9x9
-        vector<vector<SetSolverSquareSet>> board(boardSize, vector<SetSolverSquareSet>(boardSize));
 
         // for each line
         for(std::size_t i=0; i<boardSize; i++){
@@ -35,24 +35,22 @@ public:
             int j = 0;
             for(auto& r: reader){
                 if(r=='*'){
-                    std::cout << "e ";
+                    std::cout << "*";
                     board[i][j] = SetSolverSquareSet(99);
-
                 } else if(r=='-'){
-                    std::cout << "-";
                     negative = true;
                     continue;
                 } else{
                     if(negative){
-                        std::cout << "nn ";
-                        int a = r;
+                        int a = r - '0';
                         a *= -1;
+                        std::cout << a;
                         board[i][j] = SetSolverSquareSet(a);
                         negative = false;
                     } else{
-                        int b = r;
+                        int b = r - '0';
+                        std::cout << b;
                         board[i][j] = SetSolverSquareSet(b);
-                        std::cout << "n ";
                     }
                 }
                 j++;
@@ -64,16 +62,15 @@ public:
         
     int ReturnValue(size_t row, size_t col)
     {
-        // implement your code here and
-        
-        //return the right value
-        return 0;//This line was added temporarily 
+        return board[row][col].readValue;
     }
         
     void Solve()
     {
         // implement your code here
     }
+
+    
 
 //Don't edit below this line    
     

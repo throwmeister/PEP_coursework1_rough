@@ -26,5 +26,7 @@ int main()
         board->PopulateBoard(skeletonBoard);
 
         std::cout << board->ReturnValue(0, 1) << "\n";
+
+        board->Solve();
     }
 }

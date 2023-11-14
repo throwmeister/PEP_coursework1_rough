@@ -11,6 +11,7 @@ public:
     std::vector<int>set;
     int readValue;
     bool whiteBox;
+    bool filled;
     
     SetSolverSquareSet(){
         readValue = 0;

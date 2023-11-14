@@ -17,9 +17,10 @@ private:
     // aka vector of a vector of a vector
     //[[[]], [[]], [[1,2,3..]], ]
     vector<vector<SetSolverSquareSet>>board;
-
-    vector<vector<int>>rowNumPossible;
-    vector<vector<int>>columnNumPossible;
+    
+    // row1: possible: 
+    vector<vector<int>>rowNumNotPossible;
+    vector<vector<int>>columnNumNotPossible;
 
     // [row][column].first - start of compartment, .second - end of compartment#
     // This vector is static - compartments always stay the same.
@@ -34,9 +35,18 @@ public:
         vector<vector<SetSolverSquareSet>> b(boardSize, vector<SetSolverSquareSet>(boardSize));
         board = b;
         solved = false;
-        vector<vector<int>> tmp2DVec(boardSize, vector<int>(boardSize));
-        rowNumPossible = tmp2DVec;
-        columnNumPossible = tmp2DVec;
+
+        vector<vector<int>> tmp2DVec(boardSize);
+        /*
+        for(int i=0; i<boardSize; i++){
+            for(int j=0; j<boardSize; j++){
+                tmp2DVec[i][j] = 0;
+            }
+        }
+        */
+        rowNumNotPossible = tmp2DVec;
+        columnNumNotPossible = tmp2DVec;
+
         vector<vector<std::pair<int, int>>> tmp2DPairVec(boardSize, vector<std::pair<int, int>>(boardSize));
         compartmentRow = tmp2DPairVec;
         compartmentColumn = tmp2DPairVec;
@@ -80,14 +90,36 @@ public:
     void Solve(){
         // shows which compartment a cell is in.
         compartmantCreator();
-        filter(board);
+        filterInitialPossible(board);
+        filter();
     }
 
     void branchSolver(vector<vector<SetSolverSquareSet>> recBoard){
 
     }
+    
+    void filter(){
 
-    void filter(vector<vector<SetSolverSquareSet>>& cBoard){
+    }
+
+    void filterInitialPossible(vector<vector<SetSolverSquareSet>>& cBoard){
+
+        
+        // rethink my filter strategy
+        // first: get all column and row nums not allowed
+        for(int row=0; row<boardSize; row++){
+            for(int column=0; column<boardSize; column++){
+                const SetSolverSquareSet& cell = cBoard[row][column];
+                if(cell.readValue < 10 && cell.readValue != 0){
+                    int a = abs(cell.readValue);
+                    rowNumNotPossible[row].push_back(a);
+                    columnNumNotPossible[column].push_back(a);
+                }
+            }
+        }
+
+        // next: get compartment limitations
+        
 
     }
 
@@ -96,7 +128,7 @@ public:
         for(int i = 0; i<boardSize; i++){
             int compartmentLenCount = 0;
             for(int j = 0; j<boardSize; j++){
-                SetSolverSquareSet cell = board[i][j];
+                const SetSolverSquareSet& cell = board[i][j];
                 if(cell.whiteBox){
                     // White square
                     if(j==boardSize-1){

@@ -9,6 +9,11 @@
 using std::vector;
 using std::string;
 //do not add additional libraries
+struct result{
+    bool backtrack;
+    bool filtered;
+    bool solved;
+};
 
 class SetSolver
 {
@@ -91,12 +96,29 @@ public:
     }
         
     void Solve(){
-        // shows which compartment a cell is in.
+        setUp();
+
+        loopSolve();
+        /*
+        do{
+            x = reduce();
+        } while ((!x.backtrack)&&(x.filtered));
+        */
+    }
+
+    void setUp(){
         compartmantCreator();
         filterInitialPossible();
+    }
+
+    void loopSolve(){
+        result x;
+        do{
+            filterInitialPossible();
+            x = reduce();
+        } while((!x.backtrack)&&(x.filtered));
 
         breakpointTester();
-        filter();
     }
 
     void branchSolver(vector<vector<SetSolverSquareSet>> recBoard){
@@ -107,12 +129,61 @@ public:
 
     }
 
-    void filter(){
+    result reduce(){
+        result res;
+        res.backtrack = false;
+        res.filtered = false;
+        res.solved = false;
+        int emptyCellCount = 0;
+        // pair(row, column)
+        vector<std::pair<int,int>> toBeFiltered;
+        for(int row=0; row<boardSize; row++){
+            for(int column=0; column<boardSize; column++){
+                SetSolverSquareSet& cell = board[row][column];
+                if(cell.readValue == 99){
+                    emptyCellCount++;
+                    int sum = 0;
+                    int numIndex = 0;
+                    for(const auto& n: cell.set){
+                        sum += n;
+                    }
+                    switch(sum){
+                        case 0:
+                            // invalid: must backtrack
+                            res.backtrack = true;
+                            return res;
+                            break;
+                        case 1:
+                            // single value found, filter down
+                            toBeFiltered.push_back(std::make_pair(row,column));
+                            res.filtered = true;
+                            break;
+                    }
+                }
+            }
+        }
+        
+        if(emptyCellCount==0){
+            res.solved = true;
+        }
+        for(auto& c: toBeFiltered){
+            SetSolverSquareSet& cell = board[c.first][c.second];
+            int cellNum = -99;
+            for(int i=0; i<boardSize; i++){
+                if(cell.set[i]==1){
+                    cellNum = i+1;
+                    break;
+                }
+            }
+            cell.readValue = cellNum;
+            cell.set.clear();
+        }
+
+        return res;
 
     }
 
     void filterInitialPossible(){
-        // rethink my filter strategy
         // first: get all column and row nums not allowed
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
@@ -141,14 +212,8 @@ public:
                         }
                     }
                 }
-                // [2, *, *, 4]
-                // min=2 max=4 compartmentIndexDiff=3
                 const int minLimit = maxNum-compartmentIndexDiff;
                 const int maxLimit = minNum+compartmentIndexDiff;
-
-                // minLimit - 1
-                // maxlimit - 5
-
                 for(int i = compartment.first; i<compartment.second+1; i++){
                     SetSolverSquareSet& cell = board[row][i];
                     if(cell.readValue==99){
@@ -158,7 +223,6 @@ public:
                             // minlimit
                             cell.set[j] = 0;
                         }
-
                         for(int j=8; j>maxLimit-1; j--){
                             // maxLimit
                             cell.set[j] = 0;
@@ -171,10 +235,8 @@ public:
                         }
                     }
                 }
-                // final: check for compartment inconsistencies
             }
         }
-        
         // column verison
         for(int column=0; column<boardSize; column++){
             for(auto& compartment: iterateComponentColumn[column]){
@@ -216,9 +278,19 @@ public:
                         }
                     }
                 }
-                // final: check for compartment inconsistencies
             }
         }
+
+        // compartment inconsistencies
+        // come back to this
+        /*
+        for(int i=0; i<boardSize; i++){
+            for(auto& compartment: iterateComponentRow[i]){
+                for(int j = compartment.first; j<compartment.second+1; j++){
+                }
+            }
+        }
+        */
     }
 
     void compartmantCreator(){

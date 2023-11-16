@@ -11,7 +11,6 @@ public:
     std::vector<int>set;
     int readValue;
     bool whiteBox;
-    bool filled;
     
     SetSolverSquareSet(){
         readValue = 0;
@@ -21,14 +20,10 @@ public:
     SetSolverSquareSet(int i): readValue(i){
         if(i==99){
             whiteBox = true;
-            std::vector<int> set(9);
-            for(int j = 1; j<10; j++){
-                set.push_back(j);
-            }
+            std::vector<int> x(9, 1);
+            set = x;
 
         } else{
-            std::vector<int> set(1);
-            set[0] = 0;
             if(i<1){
                 whiteBox = false;
             } else{

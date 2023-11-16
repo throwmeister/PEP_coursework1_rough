@@ -27,6 +27,9 @@ private:
     vector<vector<std::pair<int, int>>>compartmentRow;
     vector<vector<std::pair<int, int>>>compartmentColumn;
 
+    vector<vector<std::pair<int, int>>> iterateComponentRow;
+    vector<vector<std::pair<int, int>>> iterateComponentColumn;
+
     bool solved;
     
 public:
@@ -36,21 +39,21 @@ public:
         board = b;
         solved = false;
 
-        vector<vector<int>> tmp2DVec(boardSize);
-        /*
-        for(int i=0; i<boardSize; i++){
-            for(int j=0; j<boardSize; j++){
-                tmp2DVec[i][j] = 0;
-            }
-        }
-        */
+        vector<vector<int>> tmp2DVec(boardSize, vector<int>(boardSize, 0));
+
         rowNumNotPossible = tmp2DVec;
         columnNumNotPossible = tmp2DVec;
 
-        vector<vector<std::pair<int, int>>> tmp2DPairVec(boardSize, vector<std::pair<int, int>>(boardSize));
+        vector<vector<std::pair<int, int>>> tmp2DPairVec(boardSize, vector<std::pair<int, int>>(boardSize, std::pair<int,int>(-1, -1)));
         compartmentRow = tmp2DPairVec;
         compartmentColumn = tmp2DPairVec;
         // CompertmentColumn will still be indexed by [row][column]
+
+        // gets all row comartments
+        vector<vector<std::pair<int, int>>> revisedTmp2dVec(boardSize);
+        iterateComponentRow = revisedTmp2dVec;
+        iterateComponentColumn = revisedTmp2dVec;
+
     }
     void PopulateBoard(vector<string>skeletonBoard)
     {
@@ -90,37 +93,132 @@ public:
     void Solve(){
         // shows which compartment a cell is in.
         compartmantCreator();
-        filterInitialPossible(board);
+        filterInitialPossible();
+
+        breakpointTester();
         filter();
     }
 
     void branchSolver(vector<vector<SetSolverSquareSet>> recBoard){
 
     }
-    
+
+    void breakpointTester(){
+
+    }
+
     void filter(){
 
     }
 
-    void filterInitialPossible(vector<vector<SetSolverSquareSet>>& cBoard){
-
-        
+    void filterInitialPossible(){
         // rethink my filter strategy
         // first: get all column and row nums not allowed
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
-                const SetSolverSquareSet& cell = cBoard[row][column];
+                const SetSolverSquareSet& cell = board[row][column];
+                int a = abs(cell.readValue);
                 if(cell.readValue < 10 && cell.readValue != 0){
-                    int a = abs(cell.readValue);
-                    rowNumNotPossible[row].push_back(a);
-                    columnNumNotPossible[column].push_back(a);
+                    rowNumNotPossible[row][a-1] = 1;
+                    columnNumNotPossible[column][a-1] = 1;
                 }
             }
         }
 
-        // next: get compartment limitations
-        
+        for(int row=0; row<boardSize; row++){
+            for(auto& compartment: iterateComponentRow[row]){
+                const int compartmentIndexDiff = compartment.second-compartment.first;
+                int maxNum = 0;
+                int minNum = 10;
+                for(int i = compartment.first; i<compartment.second+1; i++){
+                    const SetSolverSquareSet& cell = board[row][i];
+                    if(cell.readValue!=99){
+                        if(cell.readValue<minNum){
+                            minNum = cell.readValue;
+                        }
+                        if(cell.readValue>maxNum){
+                            maxNum = cell.readValue;
+                        }
+                    }
+                }
+                // [2, *, *, 4]
+                // min=2 max=4 compartmentIndexDiff=3
+                const int minLimit = maxNum-compartmentIndexDiff;
+                const int maxLimit = minNum+compartmentIndexDiff;
 
+                // minLimit - 1
+                // maxlimit - 5
+
+                for(int i = compartment.first; i<compartment.second+1; i++){
+                    SetSolverSquareSet& cell = board[row][i];
+                    if(cell.readValue==99){
+                        // set = (1,2,3,4,5,6,7,8,9)
+                        // filter through: minLimit, maxLimit
+                        for(int j=0; j<minLimit-1; j++){
+                            // minlimit
+                            cell.set[j] = 0;
+                        }
+
+                        for(int j=8; j>maxLimit-1; j--){
+                            // maxLimit
+                            cell.set[j] = 0;
+                        }
+                        for(int j=0; j<boardSize; j++){
+                            // filter through: rowNumNotPossible, columnNumNotPossible
+                            if(rowNumNotPossible[row][j]==1 || columnNumNotPossible[i][j]==1){
+                                cell.set[j] = 0;
+                            }
+                        }
+                    }
+                }
+                // final: check for compartment inconsistencies
+            }
+        }
+        
+        // column verison
+        for(int column=0; column<boardSize; column++){
+            for(auto& compartment: iterateComponentColumn[column]){
+                const int compartmentIndexDiff = compartment.second-compartment.first;
+                int maxNum = 0;
+                int minNum = 10;
+                for(int i = compartment.first; i<compartment.second+1; i++){
+                    const SetSolverSquareSet& cell = board[i][column];
+                    if(cell.readValue!=99){
+                        if(cell.readValue<minNum){
+                            minNum = cell.readValue;
+                        }
+                        if(cell.readValue>maxNum){
+                            maxNum = cell.readValue;
+                        }
+                    }
+                }
+                // [2, *, *, 4]
+                // min=2 max=4 compartmentIndexDiff=3
+                const int minLimit = maxNum-compartmentIndexDiff;
+                const int maxLimit = minNum+compartmentIndexDiff;
+
+                // minLimit - 1
+                // maxlimit - 5
+
+                for(int i = compartment.first; i<compartment.second+1; i++){
+                    SetSolverSquareSet& cell = board[i][column];
+                    if(cell.readValue==99){
+                        // set = (1,2,3,4,5,6,7,8,9)
+                        // filter through: minLimit, maxLimit
+                        for(int j=0; j<minLimit-1; j++){
+                            // minlimit
+                            cell.set[j] = 0;
+                        }
+
+                        for(int j=8; j>maxLimit-1; j--){
+                            // maxLimit
+                            cell.set[j] = 0;
+                        }
+                    }
+                }
+                // final: check for compartment inconsistencies
+            }
+        }
     }
 
     void compartmantCreator(){
@@ -135,6 +233,7 @@ public:
                         int end = j;
                         int start = j-compartmentLenCount;
                         std::pair<int,int> compartmentIndexes = std::make_pair(start,end);
+                        iterateComponentRow[i].push_back(compartmentIndexes);
                         for(int x=start; x<j+1; x++){
                             compartmentRow[i][x] = compartmentIndexes;
                         }
@@ -147,6 +246,7 @@ public:
                         int end = j-1;
                         int start = j-compartmentLenCount;
                         std::pair<int,int> compartmentIndexes = std::make_pair(start,end);
+                        iterateComponentRow[i].push_back(compartmentIndexes);
                         for(int x=start; x<j; x++){
                             compartmentRow[i][x] = compartmentIndexes;
                         }
@@ -158,7 +258,6 @@ public:
         }
 
         //Column Compartment
-        // currently broken
         for(int j = 0; j<boardSize; j++){
             int compartmentLenCount = 0;
             for(int i = 0; i<boardSize; i++){
@@ -169,6 +268,7 @@ public:
                         int end = i;
                         int start = i-compartmentLenCount;
                         std::pair<int,int> compartmentIndexes = std::make_pair(start,end);
+                        iterateComponentColumn[j].push_back(compartmentIndexes);
                         for(int x=start; x<i+1; x++){
                             compartmentColumn[x][j] = compartmentIndexes;
                         }
@@ -181,6 +281,7 @@ public:
                         int end = i-1;
                         int start = i-compartmentLenCount;
                         std::pair<int,int> compartmentIndexes = std::make_pair(start,end);
+                        iterateComponentColumn[j].push_back(compartmentIndexes);
                         for(int x=start; x<i; x++){
                             compartmentColumn[x][j] = compartmentIndexes;
                         }
@@ -190,7 +291,6 @@ public:
                 }
             }
         }
-
     }
     
 

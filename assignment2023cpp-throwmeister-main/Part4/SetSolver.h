@@ -9,10 +9,18 @@
 using std::vector;
 using std::string;
 //do not add additional libraries
+
 struct result{
     bool backtrack;
     bool filtered;
     bool solved;
+};
+
+struct bestBranch{
+    int row;
+    int column;
+    // number of branches needed
+    int options;
 };
 
 class SetSolver
@@ -24,8 +32,8 @@ private:
     vector<vector<SetSolverSquareSet>>board;
     
     // row1: possible: 
-    vector<vector<int>>rowNumNotPossible;
-    vector<vector<int>>columnNumNotPossible;
+    vector<vector<int>>rowNPossible;
+    vector<vector<int>>columnNPossible;
 
     // [row][column].first - start of compartment, .second - end of compartment#
     // This vector is static - compartments always stay the same.
@@ -34,20 +42,17 @@ private:
 
     vector<vector<std::pair<int, int>>> iterateComponentRow;
     vector<vector<std::pair<int, int>>> iterateComponentColumn;
-
-    bool solved;
-    
+  
 public:
     SetSolver()
     {
         vector<vector<SetSolverSquareSet>> b(boardSize, vector<SetSolverSquareSet>(boardSize));
         board = b;
-        solved = false;
 
         vector<vector<int>> tmp2DVec(boardSize, vector<int>(boardSize, 0));
 
-        rowNumNotPossible = tmp2DVec;
-        columnNumNotPossible = tmp2DVec;
+        rowNPossible = tmp2DVec;
+        columnNPossible = tmp2DVec;
 
         vector<vector<std::pair<int, int>>> tmp2DPairVec(boardSize, vector<std::pair<int, int>>(boardSize, std::pair<int,int>(-1, -1)));
         compartmentRow = tmp2DPairVec;
@@ -89,61 +94,109 @@ public:
             }
         }
     }
-        
-    int ReturnValue(size_t row, size_t col)
-    {
+
+
+    int ReturnValue(size_t row, size_t col){
         return board[row][col].readValue;
     }
-        
+
     void Solve(){
         setUp();
 
-        loopSolve();
-        /*
-        do{
-            x = reduce();
-        } while ((!x.backtrack)&&(x.filtered));
-        */
+        bool x = loopSolve(board, rowNPossible, columnNPossible);
+        if(!x){
+            std::cout << "\n" << "ERROR: NO SOLUTION FOUND" << "\n";
+        }
     }
 
     void setUp(){
         compartmantCreator();
-        filterInitialPossible();
+        // filterInitialPossible(board);
     }
 
-    void loopSolve(){
+    bool loopSolve(vector<vector<SetSolverSquareSet>>& cBoard, std::vector<std::vector<int>>& rowNotPossible, std::vector<std::vector<int>>& colNotPossible){
         result x;
         do{
-            filterInitialPossible();
-            x = reduce();
-        } while((!x.backtrack)&&(x.filtered));
+            filterInitialPossible(cBoard, rowNotPossible, colNotPossible);
+            x = reduce(cBoard);
+        } while((!x.backtrack)&&(x.filtered)&&(!x.solved));
 
+        if(x.solved){
+            board = cBoard;
+            return true;
+        } else if(x.backtrack){
+            // must backtrack
+            return false;
+        } else{
+            // must branch
+            bestBranch branch = getBestBranch(cBoard);
+            const SetSolverSquareSet& cell = cBoard[branch.row][branch.column];
+            vector<int> vOptions;
+            for(int i=0; i<boardSize; i++){
+                if(cell.set[i]==1){
+                    vOptions.push_back(i+1);
+                }
+            }
+
+            for(auto num: vOptions){
+                vector<vector<SetSolverSquareSet>> newboard = cBoard;
+                auto& newCell = newboard[branch.row][branch.column];
+                newCell.readValue = num;
+                newCell.set.clear();
+                auto tmpR = rowNotPossible;
+                auto tmpC = colNotPossible;
+                bool succ = loopSolve(newboard, tmpR, tmpC);
+                if(succ){
+                    return true;
+                }
+            }
+        }
         breakpointTester();
-    }
-
-    void branchSolver(vector<vector<SetSolverSquareSet>> recBoard){
-
+        return false;
     }
 
     void breakpointTester(){
 
     }
 
-    result reduce(){
+    bestBranch getBestBranch(vector<vector<SetSolverSquareSet>>& cboard){
+        bestBranch branch;
+        branch.options = 9;
+        for(int row=0; row<boardSize; row++){
+            for(int column=0; column<boardSize; column++){
+                SetSolverSquareSet& cell = cboard[row][column];
+                if(cell.readValue == 99){
+                    int sum = 0;
+                    for(const auto& n: cell.set){
+                        sum += n;
+                    }
+                    if(sum<branch.options){
+                        branch.row = row;
+                        branch.column = column;
+                        branch.options = sum;
+                    }
+                }
+            }
+        }
+
+        return branch;
+    }
+
+    result reduce(vector<vector<SetSolverSquareSet>>& cboard){
         result res;
         res.backtrack = false;
         res.filtered = false;
         res.solved = false;
         int emptyCellCount = 0;
+
         // pair(row, column)
         vector<std::pair<int,int>> toBeFiltered;
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
-                SetSolverSquareSet& cell = board[row][column];
+                SetSolverSquareSet& cell = cboard[row][column];
                 if(cell.readValue == 99){
                     emptyCellCount++;
                     int sum = 0;
-                    int numIndex = 0;
                     for(const auto& n: cell.set){
                         sum += n;
                     }
@@ -162,12 +215,12 @@ public:
                 }
             }
         }
-        
+
         if(emptyCellCount==0){
             res.solved = true;
         }
         for(auto& c: toBeFiltered){
-            SetSolverSquareSet& cell = board[c.first][c.second];
+            SetSolverSquareSet& cell = cboard[c.first][c.second];
             int cellNum = -99;
             for(int i=0; i<boardSize; i++){
                 if(cell.set[i]==1){
@@ -183,11 +236,11 @@ public:
 
     }
 
-    void filterInitialPossible(){
+    void filterInitialPossible(vector<vector<SetSolverSquareSet>>& cboard, std::vector<std::vector<int>>& rowNumNotPossible, std::vector<std::vector<int>>columnNumNotPossible){
         // first: get all column and row nums not allowed
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
-                const SetSolverSquareSet& cell = board[row][column];
+                const SetSolverSquareSet& cell = cboard[row][column];
                 int a = abs(cell.readValue);
                 if(cell.readValue < 10 && cell.readValue != 0){
                     rowNumNotPossible[row][a-1] = 1;
@@ -202,7 +255,7 @@ public:
                 int maxNum = 0;
                 int minNum = 10;
                 for(int i = compartment.first; i<compartment.second+1; i++){
-                    const SetSolverSquareSet& cell = board[row][i];
+                    const SetSolverSquareSet& cell = cboard[row][i];
                     if(cell.readValue!=99){
                         if(cell.readValue<minNum){
                             minNum = cell.readValue;
@@ -215,7 +268,7 @@ public:
                 const int minLimit = maxNum-compartmentIndexDiff;
                 const int maxLimit = minNum+compartmentIndexDiff;
                 for(int i = compartment.first; i<compartment.second+1; i++){
-                    SetSolverSquareSet& cell = board[row][i];
+                    SetSolverSquareSet& cell = cboard[row][i];
                     if(cell.readValue==99){
                         // set = (1,2,3,4,5,6,7,8,9)
                         // filter through: minLimit, maxLimit
@@ -244,7 +297,7 @@ public:
                 int maxNum = 0;
                 int minNum = 10;
                 for(int i = compartment.first; i<compartment.second+1; i++){
-                    const SetSolverSquareSet& cell = board[i][column];
+                    const SetSolverSquareSet& cell = cboard[i][column];
                     if(cell.readValue!=99){
                         if(cell.readValue<minNum){
                             minNum = cell.readValue;
@@ -263,7 +316,7 @@ public:
                 // maxlimit - 5
 
                 for(int i = compartment.first; i<compartment.second+1; i++){
-                    SetSolverSquareSet& cell = board[i][column];
+                    SetSolverSquareSet& cell = cboard[i][column];
                     if(cell.readValue==99){
                         // set = (1,2,3,4,5,6,7,8,9)
                         // filter through: minLimit, maxLimit

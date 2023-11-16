@@ -22,12 +22,29 @@ int main()
                             "*2-8**00**",
                             "-23*0*****",
                             "043-608*0-1"};
+        
+        vector<string> hardSkeletonBoard{
+            "02**-6***0",
+            "****0**68",
+            "**-4***0**",
+            "0********",
+            "0-1*2***00",
+            "******1*-9",
+            "**0***0**",
+            "7***0****",
+            "-27**0**30"
+        };
 
-        board->PopulateBoard(skeletonBoard);
+        board->PopulateBoard(hardSkeletonBoard);
         
         std::cout << board->ReturnValue(0, 1) << "\n";
 
         board->Solve();
-
+        for(size_t row=0;row<9;++row){
+            for (size_t col=0; col<9;++col){
+                std::cout<< board->ReturnValue(row, col);
+            }
+            std::cout<< "\n";
+        }
     }
 }

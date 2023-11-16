@@ -188,11 +188,13 @@ public:
         res.filtered = false;
         res.solved = false;
         int emptyCellCount = 0;
-
+        std::pair<int,int> c;
         // pair(row, column)
-        vector<std::pair<int,int>> toBeFiltered;
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
+                if(res.filtered){
+                    break;
+                }
                 SetSolverSquareSet& cell = cboard[row][column];
                 if(cell.readValue == 99){
                     emptyCellCount++;
@@ -208,7 +210,7 @@ public:
                             break;
                         case 1:
                             // single value found, filter down
-                            toBeFiltered.push_back(std::make_pair(row,column));
+                            c = std::make_pair(row,column);
                             res.filtered = true;
                             break;
                     }
@@ -219,7 +221,7 @@ public:
         if(emptyCellCount==0){
             res.solved = true;
         }
-        for(auto& c: toBeFiltered){
+        if(res.filtered){
             SetSolverSquareSet& cell = cboard[c.first][c.second];
             int cellNum = -99;
             for(int i=0; i<boardSize; i++){
@@ -231,6 +233,7 @@ public:
             cell.readValue = cellNum;
             cell.set.clear();
         }
+        
 
         return res;
 

@@ -31,15 +31,15 @@ private:
     //[[[]], [[]], [[1,2,3..]], ]
     vector<vector<SetSolverSquareSet>>board;
     
-    // row1: possible: 
+    // column+row numbers
     vector<vector<int>>rowNPossible;
     vector<vector<int>>columnNPossible;
 
+    // vectors are static - compartments always stay the same.
     // [row][column].first - start of compartment, .second - end of compartment#
-    // This vector is static - compartments always stay the same.
     vector<vector<std::pair<int, int>>>compartmentRow;
     vector<vector<std::pair<int, int>>>compartmentColumn;
-
+    
     vector<vector<std::pair<int, int>>> iterateComponentRow;
     vector<vector<std::pair<int, int>>> iterateComponentColumn;
   
@@ -54,12 +54,13 @@ public:
         rowNPossible = tmp2DVec;
         columnNPossible = tmp2DVec;
 
+        // each cell matching to a compartment: used in calc, always constant after initalisation in compartmentCreator()
         vector<vector<std::pair<int, int>>> tmp2DPairVec(boardSize, vector<std::pair<int, int>>(boardSize, std::pair<int,int>(-1, -1)));
         compartmentRow = tmp2DPairVec;
         compartmentColumn = tmp2DPairVec;
         // CompertmentColumn will still be indexed by [row][column]
 
-        // gets all row comartments
+        // list of compartments: used in calc, always constant after initalisation in compartmentCreator()
         vector<vector<std::pair<int, int>>> revisedTmp2dVec(boardSize);
         iterateComponentRow = revisedTmp2dVec;
         iterateComponentColumn = revisedTmp2dVec;
@@ -95,7 +96,6 @@ public:
         }
     }
 
-
     int ReturnValue(size_t row, size_t col){
         return board[row][col].readValue;
     }
@@ -114,6 +114,7 @@ public:
         // filterInitialPossible(board);
     }
 
+    // recusive loop for solving
     bool loopSolve(vector<vector<SetSolverSquareSet>>& cBoard, std::vector<std::vector<int>>& rowNotPossible, std::vector<std::vector<int>>& colNotPossible){
         result x;
         do{
@@ -151,14 +152,10 @@ public:
                 }
             }
         }
-        breakpointTester();
         return false;
     }
 
-    void breakpointTester(){
-
-    }
-
+    // Gets smallest branching pattern
     bestBranch getBestBranch(vector<vector<SetSolverSquareSet>>& cboard){
         bestBranch branch;
         branch.options = 9;
@@ -188,8 +185,9 @@ public:
         res.filtered = false;
         res.solved = false;
         int emptyCellCount = 0;
-        std::pair<int,int> c;
+
         // pair(row, column)
+        std::pair<int,int> c;
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
                 if(res.filtered){
@@ -273,7 +271,8 @@ public:
                 for(int i = compartment.first; i<compartment.second+1; i++){
                     SetSolverSquareSet& cell = cboard[row][i];
                     if(cell.readValue==99){
-                        // set = (1,2,3,4,5,6,7,8,9)
+                        // set = (1,1,1,1,1,1,1,1,1)s
+                        // representing set = (1,2,3,4,5,6,7,8,9)
                         // filter through: minLimit, maxLimit
                         for(int j=0; j<minLimit-1; j++){
                             // minlimit
@@ -293,6 +292,7 @@ public:
                 }
             }
         }
+
         // column verison
         for(int column=0; column<boardSize; column++){
             for(auto& compartment: iterateComponentColumn[column]){
@@ -310,18 +310,15 @@ public:
                         }
                     }
                 }
-                // [2, *, *, 4]
-                // min=2 max=4 compartmentIndexDiff=3
+
                 const int minLimit = maxNum-compartmentIndexDiff;
                 const int maxLimit = minNum+compartmentIndexDiff;
-
-                // minLimit - 1
-                // maxlimit - 5
 
                 for(int i = compartment.first; i<compartment.second+1; i++){
                     SetSolverSquareSet& cell = cboard[i][column];
                     if(cell.readValue==99){
-                        // set = (1,2,3,4,5,6,7,8,9)
+                        // set = (1,1,1,1,1,1,1,1,1)s
+                        // representing set = (1,2,3,4,5,6,7,8,9)
                         // filter through: minLimit, maxLimit
                         for(int j=0; j<minLimit-1; j++){
                             // minlimit

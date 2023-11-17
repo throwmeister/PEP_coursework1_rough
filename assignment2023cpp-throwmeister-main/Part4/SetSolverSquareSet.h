@@ -30,10 +30,7 @@ public:
                 whiteBox = true;
             }
         }
-        //Write your constructor here
     }
-
-    // You can add any additional functions you'd like in order to help with the task
 
 };
 

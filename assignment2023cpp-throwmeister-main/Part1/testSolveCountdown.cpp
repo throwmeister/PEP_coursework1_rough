@@ -7,8 +7,23 @@ using namespace std;
 using std::vector;
 
 int main(){
+
+    // 50 10 3+* 25 1+ 7*+
+    
+    vector<std::string> tester{"50", "10", "3", "+", "*", "25", "1", "+", "7", "*", "+"};
+    double x = evaluateCountdown(tester);
+    {
+        // {1, 3, 7, 10, 25, 50}  target :  831
+        
+        vector<int> numbers{1, 3, 7, 10, 25, 50};
+        CountdownSolution answer = solveCountdownProblem(numbers, 831);
+
+        cout<< "Unsolvable target. closest answer: " << answer.getValue() << "\n";
+        
+
+    }
     vector<int> numbers{1,2,3,4,5,6};
-    CountdownSolution answer = solveCountdownProblem(numbers, 21);
+    CountdownSolution answer = solveCountdownProblem(numbers, 11);
     /*
     time_t start, end;
     time(&start);

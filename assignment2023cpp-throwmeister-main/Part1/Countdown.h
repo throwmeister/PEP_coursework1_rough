@@ -15,6 +15,7 @@ std::string intToString(const int x) {
     return str.str();
 }
 
+
 class CountdownSolution {
   
 private:
@@ -42,6 +43,127 @@ public:
 // Do not edit above this line
 
 // TODO: write code here:
+
+std::string vecCharToString(const std::vector<std::string>& vec){
+    std::stringstream stream;
+    for (auto it = vec.begin(); it != vec.end(); it++) { 
+        stream << *it << " "; 
+    }
+    return stream.str();
+}
+
+// used in evaluateCountdown
+void pop_2_elements(std::vector<double> &stack, double* n1, double* n2){
+    // Dereference n1 and n2, assign them to the new values, 
+    // Remove values from the vector
+    *n2 = stack.back();
+    stack.pop_back();
+    *n1 = stack.back();
+    stack.pop_back();
+};
+
+double evaluateCountdown(const std::vector<std::string> &rpnVector){
+    // rnp_string is a reverse-polish notation expression
+    std::vector<double> stack(6);
+
+    double* n1 = new double;
+    double* n2 = new double;
+
+    for(auto& val: rpnVector){
+        if (val=="+"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)+(*n2));
+
+        } else if(val=="-"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)-(*n2));
+
+
+        } else if(val=="*"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)*(*n2));
+
+        } else if(val=="/"){
+            pop_2_elements(stack, n1, n2);
+            if(*n2==0){
+                stack.push_back(-9999);
+                break;
+            }
+            stack.push_back((*n1)/(*n2));
+            
+        } else{
+            // convert str -> double
+            std::stringstream numstream;
+            numstream << val;
+            double val_num;
+            numstream >> val_num;
+            stack.push_back(val_num);
+        }
+    }
+
+    delete n1;
+    delete n2;
+    n1 = nullptr;
+    n2 = nullptr;
+
+    return stack.back();
+};
+
+double evaluateCountdown(const std::string &rnp_string){
+    // rnp_string is a reverse-polish notation expression
+    std::vector<double> stack(6);
+
+    // create string stream
+    std::stringstream stream(rnp_string);
+    std::string val;
+
+    //used for calculation
+    double* n1 = new double;
+    double* n2 = new double;
+
+    // tokenise string
+    while(getline(stream, val, ' ')){
+        if (val=="+"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)+(*n2));
+
+        } else if(val=="-"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)-(*n2));
+
+        } else if(val=="*"){
+            pop_2_elements(stack, n1, n2);
+            stack.push_back((*n1)*(*n2));
+
+        } else if(val=="/"){
+            pop_2_elements(stack, n1, n2);
+            if(*n2==0){
+                stack.push_back(-9999);
+                break;
+            }
+            stack.push_back((*n1)/(*n2));
+
+        } else{
+            // convert string -> double using stringstream
+            // more fun :)
+            std::stringstream numstream;
+            numstream << val;
+            double val_num;
+            numstream >> val_num;
+            stack.push_back(val_num);
+        }
+    }
+
+    // cleanup
+    delete n1;
+    delete n2;
+    n1 = nullptr;
+    n2 = nullptr;
+
+    return stack.back();
+};
+
+
 
 void createStrPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
  std::vector<std::string> &permutation, std::vector<bool> &distinctVal, const int targetSize){
@@ -82,32 +204,14 @@ void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &
 
 }
 
-void createPatternPermutationsRecursion(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
- std::vector<int> &permutation, std::vector<bool> &distinctVal, const int targetSize){
-    // Checks for uniqueness in vals
-    if (permutation.size() == targetSize){
-        // Push finished permutation onto vector
-        finalPermutations.push_back(permutation);
-        return;
-    }
-    for (int i = 0; i < vals.size(); i++){
-        // Checker for distinct value
-        if (!distinctVal[i]){
-            // recursion loop
-            distinctVal[i] = true;
-            permutation.push_back(vals[i]);
-            createPatternPermutationsRecursion(finalPermutations, vals, permutation, distinctVal, targetSize);
-            distinctVal[i] = false;
-            permutation.pop_back();
-        }
-    }
-}
-
 void createPatternPermutations(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
  std::vector<int> &permutation, const int targetSize, int &operands, int &operators){
      if (permutation.size() == targetSize){
         // Push finished permutation onto vector
-        if (operands==targetSize-5 && operators==targetSize-4){
+        // size 1: 1 operator 0 operands
+        // size 3: 2 operators 1 operand
+        // size 5: 3 operators 2 operands
+        if (operands==(targetSize-1)/2 && operators==(targetSize+1)/2){
             finalPermutations.push_back(permutation);
         }
         return;
@@ -143,7 +247,6 @@ std::vector<std::vector<std::string>> permuteString(const std::vector<std::strin
 std::vector<std::vector<std::string>> permuteOperators(const std::vector<std::string> &ops, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<std::string> _p;
-    std::cout << "This ran right?\n";
     createOperatorPermutationsRecursion(permutations, ops, _p, targetSize);
     return permutations;
 }
@@ -211,17 +314,13 @@ std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteA
 
     std::vector<int> abstractOp = {1, 0};
     auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
-    std::cout << "One permutation\n";
     return pattern;
 }
 
 
 CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targetNum){
     // bruteforce: build every possible rpn expression until the target number is reached or the closest#
-    // Idea: when bulding the rpn string, check if + and * expressions do the same thing: prevent repeat evalutations
-    int closestTarget = 0;
     const std::vector<std::string> operators = { "+", "-", "*", "/" };
-    
     // temp holder
     std::vector<std::string> tmpStrNums;
 
@@ -231,169 +330,71 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
     const std::vector<std::string> strNums = tmpStrNums;
 
-    // 5 Layers 1-5
-    
-    int numOfOps = 5;
+    CountdownSolution currSol;
 
-    auto finalNums = permuteString(strNums, numOfOps+1);
-    auto finalOps = permuteOperators(operators, numOfOps);
-    // first: operandIndex, second: operatorIndex
-    auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
-    
-    std::cout << "Breakpoint\n";
-
-    
-    std::vector<std::pair<std::vector<char>, int>> templateOpCombos;
-    // combine permuteAbstractOpCombos and permuteOperators
-    for(int i=0; i<(int)finalOps.size(); i++){
-        auto& ops = finalOps[i];
-        for(int x=0; x<(int)rpnTemplates.second.size(); x++){
-            const auto& indexer = rpnTemplates.second[x];
-            std::vector<char> templateOpCombo;
-            templateOpCombo.resize((numbers.size()*2)-1);
-            for(int j=0; j<(int)ops.size(); j++){
-
-                auto op = ops[j][0];
-                templateOpCombo[indexer[j]+2] = op;
-            }
-            auto tmp = std::make_pair(templateOpCombo, x);
-            templateOpCombos.push_back(tmp);
-        }
-    }
-
-    for(const auto& nums: finalNums){
-        for(auto rpnOpTemplate: templateOpCombos){
-            rpnOpTemplate.first[0] = nums[0][0];
-            rpnOpTemplate.first[1] = nums[1][0];
-            for(int i=2; i<numOfOps+1; i++){
-                const int index = rpnTemplates.first[rpnOpTemplate.second][i-2];
-                rpnOpTemplate.first[index+2] = nums[i][0];
-            }
-        }
-    }
-
-    /*
-    for (int numOfOps = 5; numOfOps < 6; numOfOps++){
-
+    for(int numOfOps=5; (int)numOfOps<numbers.size(); numOfOps++){
         auto finalNums = permuteString(strNums, numOfOps+1);
         auto finalOps = permuteOperators(operators, numOfOps);
+        // first: operandIndex, second: operatorIndex
         auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
         
-        //std::vector<std::vector<std::string>> staticNums = permuteString(strNums, 2); 1,2
-        //std::vector<std::vector<std::string>> rpnExpressions = permuteString(strNums, numOfOps-1);
-        std::cout << "Breakpoint\n";
-        for(auto &expression: finalNums){
-            std::vector<std::string> staticRPNStart;
+        std::cout << numOfOps << "\n";
 
-            for (int i = 0; i<2; i++){
-                //std::cout << expression.back() << "\n";
-                staticRPNStart.push_back(expression.back());
-                expression.pop_back();
+        
+        std::vector<std::pair<std::vector<std::string>, int>> templateOpCombos;
+        // combine permuteAbstractOpCombos and permuteOperators
+        for(int i=0; i<(int)finalOps.size(); i++){
+            auto& ops = finalOps[i];
+            for(int x=0; x<(int)rpnTemplates.second.size(); x++){
+                const auto& indexer = rpnTemplates.second[x];
+                std::vector<std::string> templateOpCombo;
+                templateOpCombo.resize((numOfOps*2)+1);
+                for(int j=0; j<(int)ops.size(); j++){
+
+                    auto op = ops[j][0];
+                    templateOpCombo[indexer[j]+2] = op;
+                }
+                auto tmp = std::make_pair(templateOpCombo, x);
+                templateOpCombos.push_back(tmp);
             }
-            // staticRPNStart == {"6", "5"}
-            // expression = {"1", "2", "3", "4"}
+        }
 
-            for(const auto &op: finalOps){
-                // +++++
-                // Match operators and operands to pattern
-                for(auto const &pattern: rpnTemplates){
-                    std::vector<std::string> opTmp(op);
-                    std::vector<std::string> expTmp(expression);
-                    std::vector<std::string> exp(staticRPNStart);
-                    for(auto const &p: pattern){
-                        // 1 = operand
-                        // 0 = operator
-                        if(p==1){
-                            exp.push_back(expTmp.back());
-                            expTmp.pop_back();
-                        } else{
-                            exp.push_back(opTmp.back());
-                            opTmp.pop_back();
-                        }
+        // evaluation
+
+        for(const auto& nums: finalNums){
+            for(const auto& rpnOpTemplate: templateOpCombos){
+                std::vector<std::string> expression = rpnOpTemplate.first;
+                expression[0] = nums[0];
+                expression[1] = nums[1];
+                for(int i=2; i<numOfOps+1; i++){
+                    const int index = rpnTemplates.first[rpnOpTemplate.second][i-2];
+                    expression[index+2] = nums[i];
+                }
+                
+                const double eval = evaluateCountdown(expression);
+                if(eval>0&&(eval==(int)eval)){
+                    // valid num
+                    if(eval==targetNum){
+                        // set currSol
+                        std::string opSolution = vecCharToString(expression);
+                        currSol = CountdownSolution(opSolution, eval);
+                        return currSol;
+                    } else if(abs(targetNum-eval)<abs(targetNum-currSol.getValue())){
+                        // this expression is closer to the target
+                        // set currSol
+                        std::string opSolution = vecCharToString(expression);
+                        currSol = CountdownSolution(opSolution, eval);
                     }
                 }
             }
         }
     }
-    */
-    
-    /*
-    for (const std::vector<std::string>& expressions : finalRPNs) {
-        for (const std::string &exp: expressions){
-            std::cout << exp << " ";
-        }
-        std::cout << "\n";
-    }
 
-    for (auto &n: permutateExpression){
-                    std::cout << n;
-                }
-                std::cout << "\n";
-    */
     
 
-    CountdownSolution c;
-    return c;
+    return currSol;
 }
 
-// used in evaluateCountdown
-void pop_2_elements(std::vector<double> &stack, double* n1, double* n2){
-    // Dereference n1 and n2, assign them to the new values, 
-    // Remove values from the vector
-    *n2 = stack.back();
-    stack.pop_back();
-    *n1 = stack.back();
-    stack.pop_back();
-};
-
-
-double evaluateCountdown(const std::string &rnp_string){
-    // rnp_string is a reverse-polish notation expression
-    std::vector<double> stack(6);
-
-    // create string stream
-    std::stringstream stream(rnp_string);
-    std::string val;
-
-    //used for calculation
-    double* n1 = new double;
-    double* n2 = new double;
-
-    // tokenise string
-    while(getline(stream, val, ' ')){
-        if (val=="+"){
-            pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)+(*n2));
-
-        } else if(val=="-"){
-            pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)-(*n2));
-
-        } else if(val=="*"){
-            pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)*(*n2));
-
-        } else if(val=="/"){
-            pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)/(*n2));
-
-        } else{
-            // convert string -> double using stringstream
-            // more fun :)
-            std::stringstream numstream;
-            numstream << val;
-            double val_num;
-            numstream >> val_num;
-            stack.push_back(val_num);
-        }
-    }
-
-    // cleanup
-    delete n1;
-    delete n2;
-
-    return stack.back();
-};
 
 
 

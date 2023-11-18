@@ -148,9 +148,8 @@ std::vector<std::vector<std::string>> permuteOperators(const std::vector<std::st
     return permutations;
 }
 
-std::vector<std::vector<int>> permutePattern(const std::vector<int> &vals, const int targetSize){
+std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permutePattern(const std::vector<int> &vals, const int targetSize){
     std::vector<std::vector<int>> permutations;
-    std::vector<bool> distinctVals(vals.size(), false);
     std::vector<int> _p;
     int x = 0;
     int y = 0;
@@ -179,36 +178,42 @@ std::vector<std::vector<int>> permutePattern(const std::vector<int> &vals, const
         }
         it++;
     }
-    for (auto &exp: permutations){
-        
+
+    // indexPerms:
+    // indexPerm: for pattern 00100100111
+    // first 5 vals: [0,1,3,4,6,7] next 4: [2,6,8,9,10]
+
+    std::vector<std::vector<int>> operandIndex(permutations.size());
+    std::vector<std::vector<int>> operatorIndex(permutations.size());
+    int p = 0;
+    for (auto& exp: permutations){
+        // 5 operators, 4 operands
+        for(int i=0; i<(int)exp.size(); i++){
+            if(exp[i] == 1){
+                operandIndex[p].push_back(i);
+            } else{
+                operatorIndex[p].push_back(i);
+            }
+        }
+        p++;
     }
-    return permutations;
+    auto t = std::make_pair(operandIndex, operatorIndex);
+    return t;
+
 }
 
-std::vector<std::vector<int>> permuteAbstractOpCombos(const int numOfOps){
+std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteAbstractOpCombos(const int numOfOps){
     // aaaa+++++ ts=9 os=4
     // aaa++++
     // aa+++
     // a++
     // +
 
-    // redo algorithm to be much more efficient
-    /*
-    
-    for (int i=0; i<numOfOps-1; i++){
-        abstractOp.push_back(1);
-    }
-    for (int i=0; i<numOfOps; i++){
-        abstractOp.push_back(0);
-    }
-    auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
-    */
     std::vector<int> abstractOp = {1, 0};
     auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
     std::cout << "One permutation\n";
     return pattern;
 }
-
 
 
 CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targetNum){
@@ -228,8 +233,46 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
     // 5 Layers 1-5
     
-    std::vector<std::vector<std::string>> finalRPNs;
+    int numOfOps = 5;
 
+    auto finalNums = permuteString(strNums, numOfOps+1);
+    auto finalOps = permuteOperators(operators, numOfOps);
+    // first: operandIndex, second: operatorIndex
+    auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
+    
+    std::cout << "Breakpoint\n";
+
+    
+    std::vector<std::pair<std::vector<char>, int>> templateOpCombos;
+    // combine permuteAbstractOpCombos and permuteOperators
+    for(int i=0; i<(int)finalOps.size(); i++){
+        auto& ops = finalOps[i];
+        for(int x=0; x<(int)rpnTemplates.second.size(); x++){
+            const auto& indexer = rpnTemplates.second[x];
+            std::vector<char> templateOpCombo;
+            templateOpCombo.resize((numbers.size()*2)-1);
+            for(int j=0; j<(int)ops.size(); j++){
+
+                auto op = ops[j][0];
+                templateOpCombo[indexer[j]+2] = op;
+            }
+            auto tmp = std::make_pair(templateOpCombo, x);
+            templateOpCombos.push_back(tmp);
+        }
+    }
+
+    for(const auto& nums: finalNums){
+        for(auto rpnOpTemplate: templateOpCombos){
+            rpnOpTemplate.first[0] = nums[0][0];
+            rpnOpTemplate.first[1] = nums[1][0];
+            for(int i=2; i<numOfOps+1; i++){
+                const int index = rpnTemplates.first[rpnOpTemplate.second][i-2];
+                rpnOpTemplate.first[index+2] = nums[i][0];
+            }
+        }
+    }
+
+    /*
     for (int numOfOps = 5; numOfOps < 6; numOfOps++){
 
         auto finalNums = permuteString(strNums, numOfOps+1);
@@ -272,6 +315,7 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
             }
         }
     }
+    */
     
     /*
     for (const std::vector<std::string>& expressions : finalRPNs) {

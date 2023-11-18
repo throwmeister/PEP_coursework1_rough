@@ -5,10 +5,6 @@
 #include <sstream>
 #include <vector>
 
-
-// for debugging purposes
-#include <iostream>
-
 std::string intToString(const int x) {
     std::ostringstream str;
     str << x;
@@ -188,15 +184,13 @@ void createStrPermutationsRecursion(std::vector<std::vector<std::string>> &final
 
 void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &finalPermutations, const std::vector<std::string> &vals,
  std::vector<std::string> &permutation, const int targetSize){
-    // Does not check for uniqueness in vals
     if (permutation.size() == targetSize){
         // Push finished permutation onto vector
         finalPermutations.push_back(permutation);
         return;
     }
     for (int i = 0; i < vals.size(); i++){
-        // recursion loop
-        // {x - / *}
+
         permutation.push_back(vals[i]);
         createOperatorPermutationsRecursion(finalPermutations, vals, permutation, targetSize);
         permutation.pop_back();
@@ -207,10 +201,6 @@ void createOperatorPermutationsRecursion(std::vector<std::vector<std::string>> &
 void createPatternPermutations(std::vector<std::vector<int>> &finalPermutations, const std::vector<int> &vals,
  std::vector<int> &permutation, const int targetSize, int &operands, int &operators){
      if (permutation.size() == targetSize){
-        // Push finished permutation onto vector
-        // size 1: 1 operator 0 operands
-        // size 3: 2 operators 1 operand
-        // size 5: 3 operators 2 operands
         if (operands==(targetSize-1)/2 && operators==(targetSize+1)/2){
             finalPermutations.push_back(permutation);
         }
@@ -234,8 +224,8 @@ void createPatternPermutations(std::vector<std::vector<int>> &finalPermutations,
         }
         permutation.pop_back();
     }
+}
 
- }
 std::vector<std::vector<std::string>> permuteString(const std::vector<std::string> &vals, const int targetSize){
     std::vector<std::vector<std::string>> permutations;
     std::vector<bool> distinctVals(vals.size(), false);
@@ -260,6 +250,7 @@ std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteP
 
     auto it = permutations.begin();
 
+    // filter out wrong RPN expression templates
     while(it != permutations.end()){
         int operators = 0;
         int operands = 0;
@@ -282,10 +273,6 @@ std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteP
         it++;
     }
 
-    // indexPerms:
-    // indexPerm: for pattern 00100100111
-    // first 5 vals: [0,1,3,4,6,7] next 4: [2,6,8,9,10]
-
     std::vector<std::vector<int>> operandIndex(permutations.size());
     std::vector<std::vector<int>> operatorIndex(permutations.size());
     int p = 0;
@@ -306,12 +293,6 @@ std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteP
 }
 
 std::pair<std::vector<std::vector<int>>, std::vector<std::vector<int>>> permuteAbstractOpCombos(const int numOfOps){
-    // aaaa+++++ ts=9 os=4
-    // aaa++++
-    // aa+++
-    // a++
-    // +
-
     std::vector<int> abstractOp = {1, 0};
     auto pattern = permutePattern(abstractOp, (numOfOps*2)-1);
     return pattern;
@@ -332,15 +313,12 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
 
     CountdownSolution currSol;
 
-    for(int numOfOps=5; (int)numOfOps<numbers.size(); numOfOps++){
+    for(int numOfOps=1; (int)numOfOps<numbers.size(); numOfOps++){
         auto finalNums = permuteString(strNums, numOfOps+1);
         auto finalOps = permuteOperators(operators, numOfOps);
         // first: operandIndex, second: operatorIndex
         auto rpnTemplates = permuteAbstractOpCombos(numOfOps);
-        
-        std::cout << numOfOps << "\n";
 
-        
         std::vector<std::pair<std::vector<std::string>, int>> templateOpCombos;
         // combine permuteAbstractOpCombos and permuteOperators
         for(int i=0; i<(int)finalOps.size(); i++){
@@ -360,7 +338,6 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
         }
 
         // evaluation
-
         for(const auto& nums: finalNums){
             for(const auto& rpnOpTemplate: templateOpCombos){
                 std::vector<std::string> expression = rpnOpTemplate.first;
@@ -380,8 +357,7 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
                         currSol = CountdownSolution(opSolution, eval);
                         return currSol;
                     } else if(abs(targetNum-eval)<abs(targetNum-currSol.getValue())){
-                        // this expression is closer to the target
-                        // set currSol
+                        // expression is closer to the target
                         std::string opSolution = vecCharToString(expression);
                         currSol = CountdownSolution(opSolution, eval);
                     }
@@ -389,9 +365,7 @@ CountdownSolution solveCountdownProblem(std::vector<int> numbers, const int targ
             }
         }
     }
-
     
-
     return currSol;
 }
 

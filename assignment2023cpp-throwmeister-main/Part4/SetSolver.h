@@ -158,7 +158,9 @@ public:
     // Gets smallest branching pattern
     bestBranch getBestBranch(vector<vector<SetSolverSquareSet>>& cboard){
         bestBranch branch;
-        branch.options = 9;
+        branch.options = 10;
+        branch.row = 0;
+        branch.column = 0;
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
                 SetSolverSquareSet& cell = cboard[row][column];

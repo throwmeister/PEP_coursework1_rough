@@ -13,15 +13,16 @@ int main(){
     vector<std::string> tester{"50", "10", "3", "+", "*", "25", "1", "+", "7", "*", "+"};
     double x = evaluateCountdown(tester);
     {
+        /*
         // {1, 3, 7, 10, 25, 50}  target :  831
         
         vector<int> numbers{1, 3, 7, 10, 25, 50};
         CountdownSolution answer = solveCountdownProblem(numbers, 831);
 
         cout<< "Unsolvable target. closest answer: " << answer.getValue() << "\n";
-        
-
+        */
     }
+    double p = evaluateCountdown("75 2 5 + - 4 * 1 + ");
     vector<int> numbers{1,2,3,4,5,6};
     CountdownSolution answer = solveCountdownProblem(numbers, 11);
     /*

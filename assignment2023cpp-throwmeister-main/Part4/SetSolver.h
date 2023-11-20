@@ -192,9 +192,6 @@ public:
         std::pair<int,int> c;
         for(int row=0; row<boardSize; row++){
             for(int column=0; column<boardSize; column++){
-                if(res.filtered){
-                    break;
-                }
                 SetSolverSquareSet& cell = cboard[row][column];
                 if(cell.readValue == 99){
                     emptyCellCount++;

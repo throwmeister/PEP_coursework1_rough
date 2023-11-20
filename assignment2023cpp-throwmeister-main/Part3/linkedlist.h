@@ -66,7 +66,7 @@ public:
         numOfElements++;
     }
 
-    T& front() const{
+    const T& front() const{
         return head->data;
     }
 
@@ -83,7 +83,7 @@ public:
         numOfElements++;
     }
 
-    T& back() const{
+    const T& back() const{
         return tail->data;
     }
 
@@ -95,7 +95,7 @@ public:
         return NodeIterator<T>(head);
     }
 
-    NodeIteratorConst<T> begin() const{
+    const NodeIteratorConst<T> begin() const{
         return NodeIteratorConst<T>(head);
     }
 
@@ -103,7 +103,7 @@ public:
         return NodeIterator<T>(nullptr);
     }
 
-    NodeIteratorConst<T> end() const{
+    const NodeIteratorConst<T> end() const{
         return NodeIteratorConst<T>(nullptr);
     }
 
@@ -154,14 +154,12 @@ public:
 
         if(numOfElements==1){
             // Case 0: one element list
-
             delete currNode;
             head = nullptr;
             tail = nullptr;
         } else if(currNode==head){
             // Case 1: erase element is the head of the list
             returnNode = currNode->next;
-
             delete currNode;
             returnNode->previous = nullptr;
             head = returnNode;

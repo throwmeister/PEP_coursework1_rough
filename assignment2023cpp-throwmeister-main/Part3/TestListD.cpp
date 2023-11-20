@@ -95,10 +95,24 @@ int main() {
         const LinkedList<int> aList{2,4,6,8};
 
         vector<int> numbersOut;
+
+        auto llItr = aList.begin();
+        ++llItr;
+        llItr++;
         
         for (auto n : aList) { // uses const versions of begin() and end() to loop over aList
+            // auto n should be const
             numbersOut.push_back(n);
         }
+
+        const vector<int> constList{1,2,3,4};
+
+        auto itr = constList.begin();
+
+        auto frEl = constList.front();
+
+        itr++;
+        ++itr;
         
         vector<int> shouldBe{2,4,6,8};
         
@@ -111,6 +125,66 @@ int main() {
                 cout << " " << n;
             }
             cout << " }\n";
+        }
+    }
+
+    {
+        LinkedList<int> aList{2,4,6,8};
+
+        auto itr = aList.begin();
+
+        cout<< "Result of these operations should be: 64921\n";
+
+        aList.insert(itr, 1);
+
+        for(auto n: aList){
+            cout<< n;
+        }
+        cout << "\n";
+
+        aList.reverse();
+        
+        for(auto n: aList){
+            cout<< n;
+        }
+        cout << "\n";
+
+        aList.insert(itr, 9);
+
+        for(auto n: aList){
+            cout<< n;
+        }
+        cout << "\n";
+
+        auto newItr = aList.begin();
+
+        aList.erase(newItr);
+
+        for(auto n: aList){
+            cout<< n;
+        }
+        cout << "\n";
+
+    }
+
+    {
+        // memory safety
+        for(int i=0; i<10000; ++i){
+            LinkedList<int> aList{2,4,6,8};
+            auto itr = aList.begin();
+            itr++;
+            aList.insert(itr, 3);
+            auto nItr = aList.begin();
+
+            auto x = aList.erase(nItr);
+            
+            aList.insert(x, 10);
+            cout << "breakpoint\n";
+            for(auto n: aList){
+                cout<< n;
+            }
+            cout << "\n";
+
         }
     }
     

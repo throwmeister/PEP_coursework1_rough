@@ -39,6 +39,12 @@ public:
     }
 
     void operator++(){
+        // prefix
+        current = current->next;
+    }
+
+    void operator++(int){
+        // postfix
         current = current->next;
     }
 
@@ -78,6 +84,11 @@ public:
     }
 
     void operator++(){
+        current = current->next;
+    }
+
+    void operator++(int){
+        // postfix
         current = current->next;
     }
 

@@ -49,12 +49,12 @@ std::string vecCharToString(const std::vector<std::string>& vec){
 }
 
 // used in evaluateCountdown
-void pop_2_elements(std::vector<double> &stack, double* n1, double* n2){
+void pop_2_elements(std::vector<double> &stack, double& n1, double& n2){
     // Dereference n1 and n2, assign them to the new values, 
     // Remove values from the vector
-    *n2 = stack.back();
+    n2 = stack.back();
     stack.pop_back();
-    *n1 = stack.back();
+    n1 = stack.back();
     stack.pop_back();
 };
 
@@ -62,30 +62,30 @@ double evaluateCountdown(const std::vector<std::string> &rpnVector){
     // rnp_string is a reverse-polish notation expression
     std::vector<double> stack(6);
 
-    double* n1 = new double;
-    double* n2 = new double;
+    double n1;
+    double n2;
 
     for(auto& val: rpnVector){
         if (val=="+"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)+(*n2));
+            stack.push_back((n1)+(n2));
 
         } else if(val=="-"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)-(*n2));
+            stack.push_back((n1)-(n2));
 
 
         } else if(val=="*"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)*(*n2));
+            stack.push_back((n1)*(n2));
 
         } else if(val=="/"){
             pop_2_elements(stack, n1, n2);
-            if(*n2==0){
+            if(n2==0){
                 stack.push_back(-9999);
                 break;
             }
-            stack.push_back((*n1)/(*n2));
+            stack.push_back((n1)/(n2));
             
         } else{
             // convert str -> double
@@ -96,11 +96,6 @@ double evaluateCountdown(const std::vector<std::string> &rpnVector){
             stack.push_back(val_num);
         }
     }
-
-    delete n1;
-    delete n2;
-    n1 = nullptr;
-    n2 = nullptr;
 
     return stack.back();
 };
@@ -114,30 +109,30 @@ double evaluateCountdown(const std::string &rnp_string){
     std::string val;
 
     //used for calculation
-    double* n1 = new double;
-    double* n2 = new double;
+    double n1;
+    double n2;
 
     // tokenise string
     while(getline(stream, val, ' ')){
         if (val=="+"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)+(*n2));
+            stack.push_back((n1)+(n2));
 
         } else if(val=="-"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)-(*n2));
+            stack.push_back((n1)-(n2));
 
         } else if(val=="*"){
             pop_2_elements(stack, n1, n2);
-            stack.push_back((*n1)*(*n2));
+            stack.push_back((n1)*(n2));
 
         } else if(val=="/"){
             pop_2_elements(stack, n1, n2);
-            if(*n2==0){
+            if(n2==0){
                 stack.push_back(-9999);
                 break;
             }
-            stack.push_back((*n1)/(*n2));
+            stack.push_back((n1)/(n2));
 
         } else{
             // convert string -> double using stringstream
@@ -151,10 +146,6 @@ double evaluateCountdown(const std::string &rnp_string){
     }
 
     // cleanup
-    delete n1;
-    delete n2;
-    n1 = nullptr;
-    n2 = nullptr;
 
     return stack.back();
 };

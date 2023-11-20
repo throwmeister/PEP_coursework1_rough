@@ -70,7 +70,7 @@ public:
     {
         // Initialise vector size 9x9
         // for each line
-        for(std::size_t i=0; i<boardSize; i++){
+        for(int i=0; i<boardSize; i++){
             string reader = skeletonBoard[i];
             bool negative = false;
             int j = 0;

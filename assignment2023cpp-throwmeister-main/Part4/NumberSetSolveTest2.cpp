@@ -6,17 +6,18 @@
 #include <memory>
 #include "SetSolver.h"
 
+#include <chrono>
+
 
 using std::cout;
 using std::unique_ptr;
 
 int main() {
-    int retval = 0;
 
     // board 1
     cout<<"\n\n\nBoard 1\n";
     {
-
+        int retval = 0;
         unique_ptr<SetSolver> board(new SetSolver());
 
         vector<string>
@@ -31,7 +32,13 @@ int main() {
                               "043-608*0-1"};
 
         board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
+
         board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
 
         vector<vector<int>> skeletonAnswer
                 {
@@ -53,15 +60,19 @@ int main() {
                 }
             }
         }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
     }
-
-    if(retval==0) { cout << "Passed"; }
-    else{cout<<"Failed";}
 
     cout<<"\n\n\nBoard 2\n";
 
     //board 2
     {
+        int retval = 0;
         unique_ptr<SetSolver> board(new SetSolver());
 
         vector<string>
@@ -76,7 +87,13 @@ int main() {
                               "00560-42*0"};
 
         board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
+
         board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
 
         vector<vector<int>> skeletonAnswer
                 {
@@ -98,15 +115,19 @@ int main() {
                 }
             }
         }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
     }
-
-    if(retval==0) { cout << "Passed"; }
-    else{cout<<"Failed";}
     cout<<"\n\n\nBoard 3\n";
 
 //    board3
 
     {
+        int retval = 0;
         unique_ptr<SetSolver> board(new SetSolver());
 
         vector<string>
@@ -122,7 +143,12 @@ int main() {
         };
 
         board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
         board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
 
         vector<vector<int>> skeletonAnswer
                 {
@@ -145,16 +171,19 @@ int main() {
                 }
             }
         }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
     }
-
-    if(retval==0) { cout << "Passed"; }
-    else{cout<<"Failed";}
 
 //    board4
     cout<<"\n\n\nBoard 4\n";
 
     {
-        //board 4
+        int retval = 0;
         unique_ptr<SetSolver> board(new SetSolver());
 
         vector<string>
@@ -170,7 +199,13 @@ int main() {
         };
 
         board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
+
         board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
 
         vector<vector<int>> skeletonAnswer
                 {
@@ -192,107 +227,170 @@ int main() {
                 }
             }
         }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
     }
-
-    if(retval==0) { cout << "Passed"; }
-    else{cout<<"Failed";}
 
     //board5
     cout<<"\n\n\nBoard 5\n";
 
     {
-        {
-            //board 5
-            unique_ptr<SetSolver> board(new SetSolver());
+        int retval = 0;
+        unique_ptr<SetSolver> board(new SetSolver());
 
-            vector<string>
-                    skeletonBoard{"0*****-1**",
-                                  "0********",
-                                  "**0-9***6*",
-                                  "*0***0**-5",
-                                  "0-4**0**00",
-                                  "-26*0***03",
-                                  "*****00*2",
-                                  "*****3**0",
-                                  "*70*****0",
-            };
+        vector<string>
+                skeletonBoard{"0*****-1**",
+                                "0********",
+                                "**0-9***6*",
+                                "*0***0**-5",
+                                "0-4**0**00",
+                                "-26*0***03",
+                                "*****00*2",
+                                "*****3**0",
+                                "*70*****0",
+        };
 
-            board->PopulateBoard(skeletonBoard);
-            board->Solve();
+        board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
 
-            vector<vector<int>> skeletonAnswer
-                    {
-                            {0,  3,  7, 4,  5, 6, -1, 9, 8},
-                            {0,  1,  8, 3,  2, 4, 5,  7, 6},
-                            {3,  2,  0, -9, 4, 5, 8,  6, 7},
-                            {4,  0,  2, 1,  3, 0, 7,  8, -5},
-                            {0,  -4, 3, 2,  0, 7, 6,  0, 0},
-                            {-2, 6,  5, 0,  7, 8, 9,  0, 3},
-                            {9,  5,  6, 7,  8, 0, 0,  3, 2},
-                            {7,  8,  4, 6,  9, 3, 2,  5, 0},
-                            {8,  7,  0, 5,  6, 2, 3,  4, 0},
+        board->Solve();
 
-                    };
-            for (size_t row = 0; row < 9; ++row) {
-                for (size_t col = 0; col < 9; ++col) {
-                    if ((board->ReturnValue(row, col)) != (skeletonAnswer[row][col])) {
-                        cout << "Failed: when checking row: " << row << " col: " << col << "\n";
-                        retval++;
-                    }
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
+
+        vector<vector<int>> skeletonAnswer
+                {
+                        {0,  3,  7, 4,  5, 6, -1, 9, 8},
+                        {0,  1,  8, 3,  2, 4, 5,  7, 6},
+                        {3,  2,  0, -9, 4, 5, 8,  6, 7},
+                        {4,  0,  2, 1,  3, 0, 7,  8, -5},
+                        {0,  -4, 3, 2,  0, 7, 6,  0, 0},
+                        {-2, 6,  5, 0,  7, 8, 9,  0, 3},
+                        {9,  5,  6, 7,  8, 0, 0,  3, 2},
+                        {7,  8,  4, 6,  9, 3, 2,  5, 0},
+                        {8,  7,  0, 5,  6, 2, 3,  4, 0},
+
+                };
+        for (size_t row = 0; row < 9; ++row) {
+            for (size_t col = 0; col < 9; ++col) {
+                if ((board->ReturnValue(row, col)) != (skeletonAnswer[row][col])) {
+                    cout << "Failed: when checking row: " << row << " col: " << col << "\n";
+                    retval++;
                 }
             }
         }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
     }
-
-    if(retval==0) { cout << "Passed"; }
-    else{cout<<"Failed";}
-
 
     cout<<"\n\n\nBoard 6\n";
 
     //board6
 
     {
-        {
-            //board 6
-            unique_ptr<SetSolver> board(new SetSolver());
+        int retval = 0;
+        unique_ptr<SetSolver> board(new SetSolver());
 
-            vector<string>
-                    skeletonBoard{"02**-6***0",
-                                  "****0**68",
-                                  "**-4***0**",
-                                  "0********",
-                                  "0-1*2***00",
-                                  "******1*-9",
-                                  "**0***0**",
-                                  "7***0****",
-                                  "-27**0**30",
-            };
+        vector<string>
+                skeletonBoard{"02**-6***0",
+                                "****0**68",
+                                "**-4***0**",
+                                "0********",
+                                "0-1*2***00",
+                                "******1*-9",
+                                "**0***0**",
+                                "7***0****",
+                                "-27**0**30",
+        };
 
-            board->PopulateBoard(skeletonBoard);
-            board->Solve();
+        board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
 
-            vector<vector<int>> skeletonAnswer
-                    {
-                            {0,  2,  3,  1, -6, 7, 8, 9, 0},
-                            {5,  3,  2,  4, 0,  9, 7, 6, 8},
-                            {6,  5,  -4, 3, 1,  2, 0, 8, 7},
-                            {0,  4,  5,  9, 3,  8, 2, 7, 6},
-                            {0,  -1, 6,  2, 4,  5, 3, 0, 0},
-                            {8,  6,  7,  5, 2,  3, 1, 4, -9},
-                            {9,  8,  0,  7, 5,  6, 0, 1, 2},
-                            {7,  9,  8,  6, 0,  1, 4, 2, 3},
-                            {-2, 7,  9,  8, 0,  4, 5, 3, 0},
+        board->Solve();
 
-                    };
-            for (size_t row = 0; row < 9; ++row) {
-                for (size_t col = 0; col < 9; ++col) {
-                    if ((board->ReturnValue(row, col)) != (skeletonAnswer[row][col])) {
-                        cout << "Failed: when checking row: " << row << " col: " << col << "\n";
-                        retval++;
-                    }
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
+
+        vector<vector<int>> skeletonAnswer
+                {
+                        {0,  2,  3,  1, -6, 7, 8, 9, 0},
+                        {5,  3,  2,  4, 0,  9, 7, 6, 8},
+                        {6,  5,  -4, 3, 1,  2, 0, 8, 7},
+                        {0,  4,  5,  9, 3,  8, 2, 7, 6},
+                        {0,  -1, 6,  2, 4,  5, 3, 0, 0},
+                        {8,  6,  7,  5, 2,  3, 1, 4, -9},
+                        {9,  8,  0,  7, 5,  6, 0, 1, 2},
+                        {7,  9,  8,  6, 0,  1, 4, 2, 3},
+                        {-2, 7,  9,  8, 0,  4, 5, 3, 0},
+
+                };
+        for (size_t row = 0; row < 9; ++row) {
+            for (size_t col = 0; col < 9; ++col) {
+                if ((board->ReturnValue(row, col)) != (skeletonAnswer[row][col])) {
+                    cout << "Failed: when checking row: " << row << " col: " << col << "\n";
+                    retval++;
                 }
             }
+        }
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
+        }
+    }
+
+    // empty board
+    cout<< "\n\n\nEmpty board\n";
+
+    {
+        int retval = 0;
+        unique_ptr<SetSolver>board(new SetSolver());
+        vector<string>
+        skeletonBoard{      "0********",
+                            "*********",
+                            "*********",
+                            "*********",
+                            "*********",
+                            "****00***",
+                            "*********",
+                            "*********",
+                            "*********",
+                    };
+
+        
+        board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
+
+        board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
+
+        cout<< "There are multiple solutions. Your algorithm outputs: \n\n";
+        for(size_t row=0;row<9;++row){
+            for (size_t col=0; col<9;++col){
+                cout<< board->ReturnValue(row,col);
+            }
+            cout<< "\n";
+        }
+        cout << "\n";
+        if(retval==0){
+            cout << "Passed";
+        }
+        else{
+            cout<<"Failed";
         }
     }
 

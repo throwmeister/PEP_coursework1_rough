@@ -1,5 +1,4 @@
 
-// Do not add any additional classes.
 #include <vector>
 #include <string>
 #include <iostream>

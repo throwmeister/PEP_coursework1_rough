@@ -96,7 +96,7 @@ public:
         }
     }
 
-    int ReturnValue(size_t row, size_t col){
+    int ReturnValue(int row, int col){
         return board[row][col].readValue;
     }
 

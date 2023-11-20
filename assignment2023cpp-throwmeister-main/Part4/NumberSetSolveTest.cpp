@@ -8,6 +8,8 @@
 
 #include "SetSolver.h"
 
+#include <chrono>
+
 using std::cout;
 using std::unique_ptr;
 
@@ -59,5 +61,75 @@ int main()
             }
         }
     }
+
+    {
+        unique_ptr<SetSolver>board(new SetSolver());
+        vector<string>
+        skeletonBoard{      "0********",
+                            "*********",
+                            "*********",
+                            "*********",
+                            "*********",
+                            "****00***",
+                            "*********",
+                            "*********",
+                            "*********",
+                    };
+
+        
+        board->PopulateBoard(skeletonBoard);
+        auto start = std::chrono::high_resolution_clock::now();
+
+        board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
+
+        for(size_t row=0;row<9;++row){
+            for (size_t col=0; col<9;++col){
+                cout<< board->ReturnValue(row,col);
+
+            }
+            cout<< "\n";
+        }
+        cout << "\n";
+    }
+
+    {
+        unique_ptr<SetSolver>board(new SetSolver());
+        vector<string>
+        skeletonBoard{      "012345678",
+                            "783912456",
+                            "648723915",
+                            "579631284",
+                            "861254739",
+                            "235400867",
+                            "954867123",
+                            "396178542",
+                            "42758639*",
+                    };
+
+        
+        board->PopulateBoard(skeletonBoard);
+        
+        auto start = std::chrono::high_resolution_clock::now();
+
+        board->Solve();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start);
+        cout << "took: " << duration.count() << " milliseconds\n";
+
+        for(size_t row=0;row<9;++row){
+            for (size_t col=0; col<9;++col){
+                cout<< board->ReturnValue(row,col);
+
+            }
+            cout<< "\n";
+        }
+        cout << "\n";
+    }
+    
     return retval;
 }

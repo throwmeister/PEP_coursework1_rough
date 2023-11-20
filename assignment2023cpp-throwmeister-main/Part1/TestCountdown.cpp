@@ -55,6 +55,18 @@ int main() {
             cout << "3) Fail: Should have got to the target of 273, but only got " << answer.getValue() << std::endl;
             ++retval;
         }
+
+        
+    }
+    {
+        // {1, 3, 7, 10, 25, 50}  target :  831
+        
+        vector<int> numbers{1, 3, 7, 10, 25, 50};
+        CountdownSolution answer = solveCountdownProblem(numbers, 831);
+
+        cout<< "Unsolvable target. closest answer: " << answer.getValue() << "\n";
+        
+
     }
     
     return retval;
